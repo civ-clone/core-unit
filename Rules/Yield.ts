@@ -57,12 +57,14 @@ export const unitYield: (
       )
     ),
     new BaseYield(
-      new Criterion((UnitType: typeof Unit): boolean => UnitType === UnitType),
       new Criterion(
-        (UnitType: typeof Unit, unitYield: YieldValue): boolean =>
+        (BaseUnitType: typeof Unit): boolean => BaseUnitType === UnitType
+      ),
+      new Criterion(
+        (BaseUnitType: typeof Unit, unitYield: YieldValue): boolean =>
           unitYield instanceof YieldType
       ),
-      new Effect((UnitType: typeof Unit, unitYield: YieldValue): void =>
+      new Effect((BaseUnitType: typeof Unit, unitYield: YieldValue): void =>
         unitYield.set(value)
       )
     ),

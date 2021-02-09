@@ -36,12 +36,13 @@
     "@civ-clone/core-registry" "^0.1.0"
 
 "@civ-clone/core-engine@^0.1.0":
-  version "0.1.0"
-  resolved "https://registry.yarnpkg.com/@civ-clone/core-engine/-/core-engine-0.1.0.tgz#8379d0c4ff91d8f109e4dfdbf84fb11ae56b8ba9"
-  integrity sha512-iVgNyI9//7XFpbffTxodMe4NN3G5SKo+RrGwiZCLhfX1TmJc9jsrpT0R4ZDZethlIwXdEkb7dH6rhIQxLsRc/Q==
+  version "0.1.1"
+  resolved "https://registry.yarnpkg.com/@civ-clone/core-engine/-/core-engine-0.1.1.tgz#c83120c490fa100c78f340f6464893bb4eb20113"
+  integrity sha512-0UKaU26ma7PAx1pjfGm1LmZUD52eEZnSFBIcJHCadWJmMSnyx07Xr4cvGpkMHje4oKQqaD6g88adZ4lorp5XVQ==
   dependencies:
     "@civ-clone/core-registry" "^0.1.0"
     "@civ-clone/core-rule" "^0.1.0"
+    "@types/glob" "^7.1.3"
     glob "^7.1.6"
 
 "@civ-clone/core-player@^0.1.0":
@@ -76,9 +77,9 @@
     "@civ-clone/core-rule" "^0.1.0"
 
 "@civ-clone/core-turn-based-game@^0.1.0":
-  version "0.1.0"
-  resolved "https://registry.yarnpkg.com/@civ-clone/core-turn-based-game/-/core-turn-based-game-0.1.0.tgz#128a13cee416d720db6a0f9805e895bcb28dd2dd"
-  integrity sha512-8JDBKCjhzgPs4KgXKKDQZp04FDZedhBqU5Z9C3LfC3cQC9xNKPl40nydPbaDAy5G//YP34uNtSXRF+5kxWe4sQ==
+  version "0.1.1"
+  resolved "https://registry.yarnpkg.com/@civ-clone/core-turn-based-game/-/core-turn-based-game-0.1.1.tgz#0de4737978c63beb24d94ef92d21ecbff215b1d0"
+  integrity sha512-reYBTndmkr5DYwxkugP0w3GacvntF45hNpUqTiVc4QJYWGnctbv/kUkqnzElPB/xHq6zwrgrY7hQO/x1dXQ1aw==
   dependencies:
     "@civ-clone/core-engine" "^0.1.0"
     "@civ-clone/core-rule" "^0.1.0"
@@ -94,9 +95,9 @@
     "@civ-clone/core-terrain" "^0.1.0"
 
 "@civ-clone/core-world@^0.1.0":
-  version "0.1.1"
-  resolved "https://registry.yarnpkg.com/@civ-clone/core-world/-/core-world-0.1.1.tgz#54a31412e9e2a6d7382c06553192cce4e9c7836d"
-  integrity sha512-Jfki8t0B5Hu3yATF4CtvMhJ26torVk4m5SxoB16/b+Y3ppXtc+6ypOchCYjptrkDoS2LW2Mm7R0bMxg64GMyNA==
+  version "0.1.2"
+  resolved "https://registry.yarnpkg.com/@civ-clone/core-world/-/core-world-0.1.2.tgz#0b802a7967b173550fd5742740f6536cc933ee62"
+  integrity sha512-TH8I+Hg3wwI3hRkb6GhVYHAY0Lz867itmKiPeZF4BpowNH+Tyy1onYaIv2e3gmlbRFjOcTWiQ4T+n8PI0Z9IKg==
   dependencies:
     "@civ-clone/core-data-object" "^0.1.0"
     "@civ-clone/core-player" "^0.1.0"
@@ -131,6 +132,14 @@
   resolved "https://registry.yarnpkg.com/@types/chai/-/chai-4.2.14.tgz#44d2dd0b5de6185089375d976b4ec5caf6861193"
   integrity sha512-G+ITQPXkwTrslfG5L/BksmbLUA0M1iybEsmCWPqzSxsRRhJZimBKJkoMi8fr/CPygPTj4zO5pJH7I2/cm9M7SQ==
 
+"@types/glob@^7.1.3":
+  version "7.1.3"
+  resolved "https://registry.yarnpkg.com/@types/glob/-/glob-7.1.3.tgz#e6ba80f36b7daad2c685acd9266382e68985c183"
+  integrity sha512-SEYeGAIQIQX8NN6LDKprLjbrd5dARM5EXsd8GI/A5l0apYI1fGMWgPHSe4ZKL4eozlAyI+doUE9XbYS4xCkQ1w==
+  dependencies:
+    "@types/minimatch" "*"
+    "@types/node" "*"
+
 "@types/is-windows@^1.0.0":
   version "1.0.0"
   resolved "https://registry.yarnpkg.com/@types/is-windows/-/is-windows-1.0.0.tgz#1011fa129d87091e2f6faf9042d6704cdf2e7be0"
@@ -146,15 +155,20 @@
   resolved "https://registry.yarnpkg.com/@types/json5/-/json5-0.0.29.tgz#ee28707ae94e11d2b827bcbe5270bcea7f3e71ee"
   integrity sha1-7ihweulOEdK4J7y+UnC86n8+ce4=
 
+"@types/minimatch@*":
+  version "3.0.3"
+  resolved "https://registry.yarnpkg.com/@types/minimatch/-/minimatch-3.0.3.tgz#3dca0e3f33b200fc7d1139c0cd96c1268cadfd9d"
+  integrity sha512-tHq6qdbT9U1IRSGf14CL0pUlULksvY9OZ+5eEgl1N7t+OA3tGvNpxJCzuKQlsNgCVwbAs670L1vcVQi8j9HjnA==
+
 "@types/mocha@^8.0.3":
   version "8.2.0"
   resolved "https://registry.yarnpkg.com/@types/mocha/-/mocha-8.2.0.tgz#3eb56d13a1de1d347ecb1957c6860c911704bc44"
   integrity sha512-/Sge3BymXo4lKc31C8OINJgXLaw+7vL1/L1pGiBNpGrBiT8FQiaFpSYV0uhTaG4y78vcMBTMFsWaHDvuD+xGzQ==
 
-"@types/node@^14.11.2":
-  version "14.14.20"
-  resolved "https://registry.yarnpkg.com/@types/node/-/node-14.14.20.tgz#f7974863edd21d1f8a494a73e8e2b3658615c340"
-  integrity sha512-Y93R97Ouif9JEOWPIUyU+eyIdyRqQR0I8Ez1dzku4hDx34NWh4HbtIc3WNzwB1Y9ULvNGeu5B8h8bVL5cAk4/A==
+"@types/node@*", "@types/node@^14.11.2":
+  version "14.14.25"
+  resolved "https://registry.yarnpkg.com/@types/node/-/node-14.14.25.tgz#15967a7b577ff81383f9b888aa6705d43fbbae93"
+  integrity sha512-EPpXLOVqDvisVxtlbvzfyqSsFeQxltFbluZNRndIb8tr9KiBnYNLzrc1N3pyKUCww2RNrfHDViqDWWE1LCJQtQ==
 
 "@ungap/promise-all-settled@1.1.2":
   version "1.1.2"
@@ -226,9 +240,9 @@ balanced-match@^1.0.0:
   integrity sha1-ibTRmasr7kneFk6gK4nORi1xt2c=
 
 binary-extensions@^2.0.0:
-  version "2.1.0"
-  resolved "https://registry.yarnpkg.com/binary-extensions/-/binary-extensions-2.1.0.tgz#30fa40c9e7fe07dbc895678cd287024dea241dd9"
-  integrity sha512-1Yj8h9Q+QDF5FzhMs/c9+6UntbD5MkRfRwac8DoEm9ZfUBZ7tZ55YcGVAzEe4bXsdQHEk+s9S5wsOKVdZrw0tQ==
+  version "2.2.0"
+  resolved "https://registry.yarnpkg.com/binary-extensions/-/binary-extensions-2.2.0.tgz#75f502eeaf9ffde42fc98829645be4ea76bd9e2d"
+  integrity sha512-jDctJ/IVQbZoJykoeHbhXpOlNBqGNcwXJKJog42E5HDPUwQTSdjCHdihjj0DlnheQ7blbT6dHOafNAiS8ooQKA==
 
 brace-expansion@^1.1.7:
   version "1.1.11"
@@ -256,9 +270,9 @@ buffer-from@^1.0.0, buffer-from@^1.1.0:
   integrity sha512-MQcXEUbCKtEo7bhqEs6560Hyd4XaovZlO/k9V3hjVUF/zwW7KBVdSK4gIt/bzwS9MbR5qob+F5jusZsb0YQK2A==
 
 c8@^7.3.1:
-  version "7.4.0"
-  resolved "https://registry.yarnpkg.com/c8/-/c8-7.4.0.tgz#098ba30ba4a58de9e080645116ba8ae3d545fd5c"
-  integrity sha512-K8I7MEe2i4L91YBX3HtV10kKpU5uqGeyjtsdGS2FxfT0pk15d9jthujjR1ORRLrCJ4tXuDK9PSH2vChzRDoAZw==
+  version "7.5.0"
+  resolved "https://registry.yarnpkg.com/c8/-/c8-7.5.0.tgz#a69439ab82848f344a74bb25dc5dd4e867764481"
+  integrity sha512-GSkLsbvDr+FIwjNSJ8OwzWAyuznEYGTAd1pzb/Kr0FMLuV4vqYJTyjboDTwmlUNAG6jAU3PFWzqIdKrOt1D8tw==
   dependencies:
     "@bcoe/v8-coverage" "^0.2.3"
     "@istanbuljs/schema" "^0.1.2"
@@ -290,9 +304,9 @@ chai-spies@^1.0.0:
   integrity sha512-elF2ZUczBsFoP07qCfMO/zeggs8pqCf3fZGyK5+2X4AndS8jycZYID91ztD9oQ7d/0tnS963dPkd0frQEThDsg==
 
 chai@^4.2.0:
-  version "4.2.0"
-  resolved "https://registry.yarnpkg.com/chai/-/chai-4.2.0.tgz#760aa72cf20e3795e84b12877ce0e83737aa29e5"
-  integrity sha512-XQU3bhBukrOsQCuwZndwGcCVQHyZi53fQ6Ys1Fym7E4olpIqqZZhhoFJoaKVvV17lWQoXYwgWN2nF5crA8J2jw==
+  version "4.3.0"
+  resolved "https://registry.yarnpkg.com/chai/-/chai-4.3.0.tgz#5523a5faf7f819c8a92480d70a8cccbadacfc25f"
+  integrity sha512-/BFd2J30EcOwmdOgXvVsmM48l0Br0nmZPlO0uOW4XKh6kpsUumRXBgPV+IlaqFaqr9cYbeoZAM1Npx0i4A+aiA==
   dependencies:
     assertion-error "^1.1.0"
     check-error "^1.0.2"
@@ -812,9 +826,9 @@ path-key@^3.1.0:
   integrity sha512-ojmeN0qd+y0jszEtoY48r0Peq5dwMEkIlCOu6Q5f41lfkswXuKtYrhgoTpLnyIcHm24Uhqx+5Tqm2InSwLhE6Q==
 
 pathval@^1.1.0:
-  version "1.1.0"
-  resolved "https://registry.yarnpkg.com/pathval/-/pathval-1.1.0.tgz#b942e6d4bde653005ef6b71361def8727d0645e0"
-  integrity sha1-uULm1L3mUwBe9rcTYd74cn0GReA=
+  version "1.1.1"
+  resolved "https://registry.yarnpkg.com/pathval/-/pathval-1.1.1.tgz#8534e77a77ce7ac5a2512ea21e0fdb8fcf6c3d8d"
+  integrity sha512-Dp6zGqpTdETdR63lehJYPeIOqpiNBNtc7BpWSLrOje7UaIsE5aY92r/AunQA7rsXvet3lrJ3JnZX29UPTKXyKQ==
 
 picomatch@^2.0.4, picomatch@^2.2.1:
   version "2.2.2"
@@ -1043,9 +1057,9 @@ type-detect@^4.0.0, type-detect@^4.0.5:
   integrity sha512-0fr/mIH1dlO+x7TlcMy+bIDqKPsw/70tVyeHW787goQjhmqaZe10uwLujubK9q9Lg6Fiho1KUKDYz0Z7k7g5/g==
 
 typescript@^4.0.3:
-  version "4.1.3"
-  resolved "https://registry.yarnpkg.com/typescript/-/typescript-4.1.3.tgz#519d582bd94cba0cf8934c7d8e8467e473f53bb7"
-  integrity sha512-B3ZIOf1IKeH2ixgHhj6la6xdwR9QrLC5d1VKeCSY4tvkqhF2eqd9O7txNlS0PO3GrBAFIdr3L1ndNwteUbZLYg==
+  version "4.1.4"
+  resolved "https://registry.yarnpkg.com/typescript/-/typescript-4.1.4.tgz#f058636e2f4f83f94ddaae07b20fd5e14598432f"
+  integrity sha512-+Uru0t8qIRgjuCpiSPpfGuhHecMllk5Zsazj5LZvVsEStEjmIRRBZe+jHjGQvsgS7M1wONy2PQXd67EMyV6acg==
 
 v8-to-istanbul@^7.1.0:
   version "7.1.0"

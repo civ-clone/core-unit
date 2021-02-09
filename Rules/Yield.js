@@ -20,7 +20,7 @@ const unitYield = (UnitType, attack = 1, defence = 1, movement = 1, visibility =
         [Yields_1.Visibility, visibility],
     ].flatMap(([YieldType, value]) => [
         new Yield(new Criterion_1.default((unit) => unit instanceof UnitType), new Criterion_1.default((unit, unitYield) => unitYield instanceof YieldType), new Effect_1.default((unit, unitYield) => unitYield.set(value))),
-        new BaseYield(new Criterion_1.default((UnitType) => UnitType === UnitType), new Criterion_1.default((UnitType, unitYield) => unitYield instanceof YieldType), new Effect_1.default((UnitType, unitYield) => unitYield.set(value))),
+        new BaseYield(new Criterion_1.default((BaseUnitType) => BaseUnitType === UnitType), new Criterion_1.default((BaseUnitType, unitYield) => unitYield instanceof YieldType), new Effect_1.default((BaseUnitType, unitYield) => unitYield.set(value))),
     ]),
 ];
 exports.unitYield = unitYield;
