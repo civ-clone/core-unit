@@ -12,7 +12,7 @@ import Unit from './Unit';
 export interface IAction extends IDataObject {
   forUnit(unit: Unit): Action;
   from(): Tile;
-  perform({}: { [key: string]: any[] }): void;
+  perform(...args: any[]): void;
   ruleRegistry(): RuleRegistry;
   to(): Tile;
   unit(): Unit;

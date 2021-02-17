@@ -1,3 +1,4 @@
+import { Action, IAction } from './Action';
 import {
   RuleRegistry,
   instance as ruleRegistryInstance,
@@ -6,14 +7,17 @@ import {
   Turn,
   instance as turnInstance,
 } from '@civ-clone/core-turn-based-game/Turn';
-import Action from './Action';
 import Busy from './Rules/Busy';
 import Criterion from '@civ-clone/core-rule/Criterion';
 import Effect from '@civ-clone/core-rule/Effect';
 import Unit from './Unit';
 import Tile from '@civ-clone/core-world/Tile';
 
-export class DelayedAction extends Action {
+export interface IDelayedAction extends IAction {
+  perform(turns: number, action: (...args: any[]) => void): void;
+}
+
+export class DelayedAction extends Action implements IDelayedAction {
   #turn: Turn;
 
   constructor(
@@ -27,6 +31,7 @@ export class DelayedAction extends Action {
 
     this.#turn = turn;
   }
+
   perform(turns: number, action: (...args: any[]) => void = () => {}): void {
     const endTurn: number = this.#turn.value() + turns;
 
