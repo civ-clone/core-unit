@@ -33,10 +33,10 @@ class DelayedAction extends Action_1.Action {
         this.unit().moves().set(0);
         this.unit().setBusy(new Busy_1.default(new Criterion_1.default(() => __classPrivateFieldGet(this, _turn).value() === endTurn), new Effect_1.default((...args) => {
             const unit = this.unit();
-            action(...args);
             unit.setActive();
             unit.setBusy();
             unit.moves().set(this.unit().movement());
+            action(...args);
         })));
     }
 }

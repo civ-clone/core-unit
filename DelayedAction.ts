@@ -45,11 +45,11 @@ export class DelayedAction extends Action implements IDelayedAction {
         new Effect((...args: any[]): void => {
           const unit: Unit = this.unit();
 
-          action(...args);
-
           unit.setActive();
           unit.setBusy();
           unit.moves().set(this.unit().movement());
+
+          action(...args);
         })
       )
     );
