@@ -4,8 +4,10 @@ exports.getAdditionalData = void 0;
 const UnitRegistry_1 = require("../UnitRegistry");
 const AdditionalData_1 = require("@civ-clone/core-data-object/AdditionalData");
 const Player_1 = require("@civ-clone/core-player/Player");
+const Tile_1 = require("@civ-clone/core-world/Tile");
 const getAdditionalData = (unitRegistry = UnitRegistry_1.instance) => [
     new AdditionalData_1.default(Player_1.default, 'units', (player) => unitRegistry.getByPlayer(player)),
+    new AdditionalData_1.default(Tile_1.default, 'units', (tile) => unitRegistry.getByTile(tile)),
 ];
 exports.getAdditionalData = getAdditionalData;
 exports.default = exports.getAdditionalData;
