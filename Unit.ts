@@ -48,6 +48,8 @@ export interface IUnit extends IDataObject {
   movement(): Movement;
   moves(): Moves;
   player(): Player;
+  status(): Action | null;
+  setStatus(status: Action | null): void;
   tile(): Tile;
   setTile(tile: Tile): void;
   visibility(): Visibility;
@@ -64,6 +66,7 @@ export class Unit extends DataObject implements IUnit {
   #moves: Moves = new Moves();
   #player: Player;
   #ruleRegistry: RuleRegistry;
+  #status: Action | null = null;
   #tile: Tile;
   #waiting: boolean = false;
 
@@ -92,8 +95,10 @@ export class Unit extends DataObject implements IUnit {
       'defence',
       'movement',
       'moves',
-      // 'player', // TODO: add this back in
+      'player',
+      'status',
       'tile',
+      'visibility',
       'waiting'
     );
   }
@@ -228,6 +233,14 @@ export class Unit extends DataObject implements IUnit {
 
   player(): Player {
     return this.#player;
+  }
+
+  status(): Action | null {
+    return this.#status;
+  }
+
+  setStatus(status: Action | null): void {
+    this.#status = status;
   }
 
   tile(): Tile {

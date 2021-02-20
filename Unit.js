@@ -12,7 +12,7 @@ var __classPrivateFieldGet = (this && this.__classPrivateFieldGet) || function (
     }
     return privateMap.get(receiver);
 };
-var _active, _busy, _city, _destroyed, _moves, _player, _ruleRegistry, _tile, _waiting;
+var _active, _busy, _city, _destroyed, _moves, _player, _ruleRegistry, _status, _tile, _waiting;
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.Unit = void 0;
 const Action_1 = require("./Rules/Action");
@@ -34,6 +34,7 @@ class Unit extends DataObject_1.DataObject {
         _moves.set(this, new Yields_1.Moves());
         _player.set(this, void 0);
         _ruleRegistry.set(this, void 0);
+        _status.set(this, null);
         _tile.set(this, void 0);
         _waiting.set(this, false);
         __classPrivateFieldSet(this, _city, city);
@@ -41,9 +42,7 @@ class Unit extends DataObject_1.DataObject {
         __classPrivateFieldSet(this, _tile, tile);
         __classPrivateFieldSet(this, _ruleRegistry, ruleRegistry);
         __classPrivateFieldGet(this, _ruleRegistry).process(Created_1.Created, this);
-        this.addKey('actions', 'actionsForNeighbours', 'active', 'attack', 'busy', 'city', 'defence', 'movement', 'moves', 
-        // 'player', // TODO: add this back in
-        'tile', 'waiting');
+        this.addKey('actions', 'actionsForNeighbours', 'active', 'attack', 'busy', 'city', 'defence', 'movement', 'moves', 'player', 'status', 'tile', 'visibility', 'waiting');
     }
     action(action, ...args) {
         return action.perform(...args);
@@ -115,6 +114,12 @@ class Unit extends DataObject_1.DataObject {
     player() {
         return __classPrivateFieldGet(this, _player);
     }
+    status() {
+        return __classPrivateFieldGet(this, _status);
+    }
+    setStatus(status) {
+        __classPrivateFieldSet(this, _status, status);
+    }
     tile() {
         return __classPrivateFieldGet(this, _tile);
     }
@@ -140,6 +145,6 @@ class Unit extends DataObject_1.DataObject {
     }
 }
 exports.Unit = Unit;
-_active = new WeakMap(), _busy = new WeakMap(), _city = new WeakMap(), _destroyed = new WeakMap(), _moves = new WeakMap(), _player = new WeakMap(), _ruleRegistry = new WeakMap(), _tile = new WeakMap(), _waiting = new WeakMap();
+_active = new WeakMap(), _busy = new WeakMap(), _city = new WeakMap(), _destroyed = new WeakMap(), _moves = new WeakMap(), _player = new WeakMap(), _ruleRegistry = new WeakMap(), _status = new WeakMap(), _tile = new WeakMap(), _waiting = new WeakMap();
 exports.default = Unit;
 //# sourceMappingURL=Unit.js.map

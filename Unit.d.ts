@@ -34,6 +34,8 @@ export interface IUnit extends IDataObject {
   movement(): Movement;
   moves(): Moves;
   player(): Player;
+  status(): Action | null;
+  setStatus(status: Action | null): void;
   tile(): Tile;
   setTile(tile: Tile): void;
   visibility(): Visibility;
@@ -78,6 +80,8 @@ export declare class Unit extends DataObject implements IUnit {
   movement(): Movement;
   moves(): Moves;
   player(): Player;
+  status(): Action | null;
+  setStatus(status: Action | null): void;
   tile(): Tile;
   setTile(tile: Tile): void;
   visibility(): Visibility;
