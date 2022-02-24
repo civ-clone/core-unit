@@ -83,8 +83,6 @@ export class Unit extends DataObject implements IUnit {
     this.#tile = tile;
     this.#ruleRegistry = ruleRegistry;
 
-    (this.#ruleRegistry as ICreatedRegistry).process(Created, this);
-
     this.addKey(
       'actions',
       'actionsForNeighbours',
@@ -101,6 +99,8 @@ export class Unit extends DataObject implements IUnit {
       'visibility',
       'waiting'
     );
+
+    (this.#ruleRegistry as ICreatedRegistry).process(Created, this);
   }
 
   action(action: Action, ...args: any[]): void {

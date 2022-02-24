@@ -146,22 +146,18 @@ describe('Unit', (): void => {
     // this should be set to `.movement()` as required on TurnStart or similar
     expect(unit.moves().value()).to.equal(0);
 
-    ([
-      [new Attack(), 2],
-      [new Defence(), 4],
-      [new Movement(), 6],
-      [new Visibility(), 8],
-    ] as [Yield, number][]).forEach(
-      ([unitYield, expectedValue]: [Yield, number]): void => {
-        (ruleRegistry as IBaseYieldRegistry).process(
-          BaseYield,
-          Unit,
-          unitYield
-        );
+    (
+      [
+        [new Attack(), 2],
+        [new Defence(), 4],
+        [new Movement(), 6],
+        [new Visibility(), 8],
+      ] as [Yield, number][]
+    ).forEach(([unitYield, expectedValue]: [Yield, number]): void => {
+      (ruleRegistry as IBaseYieldRegistry).process(BaseYield, Unit, unitYield);
 
-        expect(unitYield.value()).to.eql(expectedValue);
-      }
-    );
+      expect(unitYield.value()).to.eql(expectedValue);
+    });
   });
 
   it('should be possible to set `Busy`', (): void => {

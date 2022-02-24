@@ -15,7 +15,8 @@ export interface IUnitRegistry extends IEntityRegistry<Unit> {
 
 export class UnitRegistry
   extends EntityRegistry<Unit>
-  implements IUnitRegistry {
+  implements IUnitRegistry
+{
   constructor() {
     super(Unit);
   }

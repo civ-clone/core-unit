@@ -34,39 +34,40 @@ export const unitYield: (
   movement: number = 1,
   visibility: number = 1
 ): (Yield | BaseYield)[] => [
-  ...([
-    [Attack, attack],
-    [Defence, defence],
-    [Movement, movement],
-    [Visibility, visibility],
-  ] as [
-    typeof YieldValue,
-    number
-  ][]).flatMap(([YieldType, value]: [typeof YieldValue, number]): (
-    | Yield
-    | BaseYield
-  )[] => [
-    new Yield(
-      new Criterion((unit: Unit): boolean => unit instanceof UnitType),
-      new Criterion(
-        (unit: Unit, unitYield: YieldValue): boolean =>
-          unitYield instanceof YieldType
+  ...(
+    [
+      [Attack, attack],
+      [Defence, defence],
+      [Movement, movement],
+      [Visibility, visibility],
+    ] as [typeof YieldValue, number][]
+  ).flatMap(
+    ([YieldType, value]: [typeof YieldValue, number]): (
+      | Yield
+      | BaseYield
+    )[] => [
+      new Yield(
+        new Criterion((unit: Unit): boolean => unit instanceof UnitType),
+        new Criterion(
+          (unit: Unit, unitYield: YieldValue): boolean =>
+            unitYield instanceof YieldType
+        ),
+        new Effect((unit: Unit, unitYield: YieldValue): void =>
+          unitYield.set(value)
+        )
       ),
-      new Effect((unit: Unit, unitYield: YieldValue): void =>
-        unitYield.set(value)
-      )
-    ),
-    new BaseYield(
-      new Criterion(
-        (BaseUnitType: typeof Unit): boolean => BaseUnitType === UnitType
+      new BaseYield(
+        new Criterion(
+          (BaseUnitType: typeof Unit): boolean => BaseUnitType === UnitType
+        ),
+        new Criterion(
+          (BaseUnitType: typeof Unit, unitYield: YieldValue): boolean =>
+            unitYield instanceof YieldType
+        ),
+        new Effect((BaseUnitType: typeof Unit, unitYield: YieldValue): void =>
+          unitYield.set(value)
+        )
       ),
-      new Criterion(
-        (BaseUnitType: typeof Unit, unitYield: YieldValue): boolean =>
-          unitYield instanceof YieldType
-      ),
-      new Effect((BaseUnitType: typeof Unit, unitYield: YieldValue): void =>
-        unitYield.set(value)
-      )
-    ),
-  ]),
+    ]
+  ),
 ];
