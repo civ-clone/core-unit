@@ -1,6 +1,6 @@
 {
   "name": "@civ-clone/core-unit",
-  "version": "0.1.8",
+  "version": "0.1.9",
   "repository": "git@github.com:civ-clone/core-unit.git",
   "keywords": [
     "typescript",
@@ -18,6 +18,8 @@
     "ts:compile": "tsc --build tsconfig.json"
   },
   "devDependencies": {
+    "@civ-clone/core-terrain": "^0.1.0",
+    "@civ-clone/core-world-generator": "^0.1.0",
     "@types/chai": "^4.0.0",
     "@types/chai-spies": "^1.0.0",
     "@types/mocha": "^8.0.0",
@@ -32,6 +34,7 @@
   },
   "dependencies": {
     "@civ-clone/core-city": "^0.1.0",
+    "@civ-clone/core-city-build": "^0.1.3",
     "@civ-clone/core-data-object": "^0.1.0",
     "@civ-clone/core-player": "^0.1.0",
     "@civ-clone/core-registry": "^0.1.0",

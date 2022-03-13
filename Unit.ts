@@ -1,11 +1,8 @@
 import { Action as ActionRule, IActionRegistry } from './Rules/Action';
 import { Activate, IActivateRegistry } from './Rules/Activate';
 import { Attack, Defence, Movement, Moves, Visibility } from './Yields';
+import { Buildable, IBuildable } from '@civ-clone/core-city-build/Buildable';
 import { Created, ICreatedRegistry } from './Rules/Created';
-import {
-  DataObject,
-  IDataObject,
-} from '@civ-clone/core-data-object/DataObject';
 import { Destroyed, IDestroyedRegistry } from './Rules/Destroyed';
 import {
   RuleRegistry,
@@ -29,7 +26,7 @@ export type IActionsForNeighbours = {
 type IBusy = Busy | null;
 type ICity = City | null;
 
-export interface IUnit extends IDataObject {
+export interface IUnit extends IBuildable {
   action(action: Action, ...args: any[]): void;
   actions(to: INeighbouringTiles | Tile, from: Tile): Action[];
   actionsForNeighbours(from: Tile): IActionsForNeighbours;
@@ -58,7 +55,9 @@ export interface IUnit extends IDataObject {
   yield(...yields: Yield[]): Yield[];
 }
 
-export class Unit extends DataObject implements IUnit {
+// https://github.com/microsoft/TypeScript/issues/4628
+// @ts-expect-error
+export class Unit extends Buildable implements IUnit {
   #active: boolean = true;
   #busy: IBusy = null;
   #city: ICity;
@@ -189,18 +188,11 @@ export class Unit extends DataObject implements IUnit {
     return this.#city;
   }
 
-  static createFromObject({
-    city = null,
-    player,
-    ruleRegistry = ruleRegistryInstance,
-    tile,
-  }: {
-    city: ICity;
-    player: Player;
-    ruleRegistry?: RuleRegistry;
-    tile: Tile;
-  }): Unit {
-    return new this(city, player, tile, ruleRegistry);
+  static build(
+    city: City,
+    ruleRegistry: RuleRegistry = ruleRegistryInstance
+  ) {
+    return new this(city, city.player(), city.tile(), ruleRegistry);
   }
 
   defence(): Defence {

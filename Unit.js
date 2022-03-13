@@ -16,13 +16,15 @@ exports.Unit = void 0;
 const Action_1 = require("./Rules/Action");
 const Activate_1 = require("./Rules/Activate");
 const Yields_1 = require("./Yields");
+const Buildable_1 = require("@civ-clone/core-city-build/Buildable");
 const Created_1 = require("./Rules/Created");
-const DataObject_1 = require("@civ-clone/core-data-object/DataObject");
 const Destroyed_1 = require("./Rules/Destroyed");
 const RuleRegistry_1 = require("@civ-clone/core-rule/RuleRegistry");
 const Visibility_1 = require("./Rules/Visibility");
 const Yield_1 = require("./Rules/Yield");
-class Unit extends DataObject_1.DataObject {
+// https://github.com/microsoft/TypeScript/issues/4628
+// @ts-expect-error
+class Unit extends Buildable_1.Buildable {
     constructor(city, player, tile, ruleRegistry = RuleRegistry_1.instance) {
         super();
         _Unit_active.set(this, true);
@@ -87,8 +89,8 @@ class Unit extends DataObject_1.DataObject {
     city() {
         return __classPrivateFieldGet(this, _Unit_city, "f");
     }
-    static createFromObject({ city = null, player, ruleRegistry = RuleRegistry_1.instance, tile, }) {
-        return new this(city, player, tile, ruleRegistry);
+    static build(city, ruleRegistry = RuleRegistry_1.instance) {
+        return new this(city, city.player(), city.tile(), ruleRegistry);
     }
     defence() {
         const [unitYield] = this.yield(new Yields_1.Defence());

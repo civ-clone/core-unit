@@ -186,13 +186,9 @@ describe('Unit', (): void => {
     expect(unit.destroyed()).to.true;
   });
 
-  it('should be possible to construct from a standard method', (): void => {
+  it('should be possible to construct from the `Buildable` method', (): void => {
     const city = generateCity(),
-      unit = Unit.createFromObject({
-        city,
-        player: city.player(),
-        tile: city.tile(),
-      });
+      unit = Unit.build(city);
 
     expect(unit).to.instanceof(Unit);
     expect(unit.city()).to.equal(city);
