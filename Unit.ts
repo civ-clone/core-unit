@@ -188,10 +188,7 @@ export class Unit extends Buildable implements IUnit {
     return this.#city;
   }
 
-  static build(
-    city: City,
-    ruleRegistry: RuleRegistry = ruleRegistryInstance
-  ) {
+  static build(city: City, ruleRegistry: RuleRegistry = ruleRegistryInstance) {
     return new this(city, city.player(), city.tile(), ruleRegistry);
   }
 

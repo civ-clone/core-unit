@@ -1,4 +1,5 @@
 import { Action, IAction } from './Action';
+import { Moved, IMovedRegistry } from './Rules/Moved';
 import {
   RuleRegistry,
   instance as ruleRegistryInstance,
@@ -10,8 +11,8 @@ import {
 import Busy from './Rules/Busy';
 import Criterion from '@civ-clone/core-rule/Criterion';
 import Effect from '@civ-clone/core-rule/Effect';
-import Unit from './Unit';
 import Tile from '@civ-clone/core-world/Tile';
+import Unit from './Unit';
 
 export interface IDelayedAction extends IAction {
   perform(turns: number, action: (...args: any[]) => void): void;
@@ -50,6 +51,12 @@ export class DelayedAction extends Action implements IDelayedAction {
           unit.moves().set(this.unit().movement());
 
           action(...args);
+
+          (this.ruleRegistry() as IMovedRegistry).process(
+            Moved,
+            this.unit(),
+            this
+          );
         })
       )
     );
