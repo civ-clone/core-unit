@@ -33,22 +33,24 @@ export class DelayedAction extends Action implements IDelayedAction {
     this.#turn = turn;
   }
 
-  perform(turns: number, action: (...args: any[]) => void = () => {}): void {
+  perform(
+    turns: number,
+    action: (...args: any[]) => void = () => {},
+    BusyRule: typeof Busy = Busy
+  ): void {
     const endTurn: number = this.#turn.value() + turns;
 
     this.unit().setActive(false);
-
     this.unit().moves().set(0);
 
     this.unit().setBusy(
-      new Busy(
+      new BusyRule(
         new Criterion((): boolean => this.#turn.value() === endTurn),
         new Effect((...args: any[]): void => {
           const unit: Unit = this.unit();
 
           unit.setActive();
           unit.setBusy();
-          unit.moves().set(this.unit().movement());
 
           action(...args);
 

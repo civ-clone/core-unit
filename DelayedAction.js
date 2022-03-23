@@ -26,15 +26,14 @@ class DelayedAction extends Action_1.Action {
         _DelayedAction_turn.set(this, void 0);
         __classPrivateFieldSet(this, _DelayedAction_turn, turn, "f");
     }
-    perform(turns, action = () => { }) {
+    perform(turns, action = () => { }, BusyRule = Busy_1.default) {
         const endTurn = __classPrivateFieldGet(this, _DelayedAction_turn, "f").value() + turns;
         this.unit().setActive(false);
         this.unit().moves().set(0);
-        this.unit().setBusy(new Busy_1.default(new Criterion_1.default(() => __classPrivateFieldGet(this, _DelayedAction_turn, "f").value() === endTurn), new Effect_1.default((...args) => {
+        this.unit().setBusy(new BusyRule(new Criterion_1.default(() => __classPrivateFieldGet(this, _DelayedAction_turn, "f").value() === endTurn), new Effect_1.default((...args) => {
             const unit = this.unit();
             unit.setActive();
             unit.setBusy();
-            unit.moves().set(this.unit().movement());
             action(...args);
             this.ruleRegistry().process(Moved_1.Moved, this.unit(), this);
         })));
