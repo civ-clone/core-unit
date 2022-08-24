@@ -8,28 +8,16 @@
   "version" "0.2.3"
 
 "@civ-clone/core-city-build@^0.1.3":
-  "integrity" "sha512-ehtwHpKt4INr7qnqgT5hN7vNSafeR0FRk0ie/6+rDYbl5ixWwC5xag7c2FaGG8loRX/zif2qWHF6YV+IxadX4Q=="
-  "resolved" "https://registry.npmjs.org/@civ-clone/core-city-build/-/core-city-build-0.1.3.tgz"
-  "version" "0.1.3"
-  dependencies:
-    "@civ-clone/core-city" "^0.1.0"
-    "@civ-clone/core-city-improvement" "^0.1.0"
-    "@civ-clone/core-data-object" "^0.1.0"
-    "@civ-clone/core-registry" "^0.1.0"
-    "@civ-clone/core-rule" "^0.1.0"
-    "@civ-clone/core-unit" "^0.1.0"
-    "@civ-clone/core-yield" "^0.1.0"
-
-"@civ-clone/core-city-improvement@^0.1.0":
-  "integrity" "sha512-j4HPaCiPrdCE8tL4enpQZWXAhyeMwNTLrnPzLib691gCDR++kPbwAveyxwB48UlcW6BuYHLrF3OGFHNiybPeKw=="
-  "resolved" "https://registry.npmjs.org/@civ-clone/core-city-improvement/-/core-city-improvement-0.1.1.tgz"
-  "version" "0.1.1"
+  "integrity" "sha512-V08l071RbQmTUzxPYHnNynKVyrwTrReBvh/yRqB1Cov9nFWqM522+W2RaL87m7S5429faZjde32w524oUPYaEA=="
+  "resolved" "https://registry.npmjs.org/@civ-clone/core-city-build/-/core-city-build-0.1.4.tgz"
+  "version" "0.1.4"
   dependencies:
     "@civ-clone/core-city" "^0.1.0"
     "@civ-clone/core-data-object" "^0.1.0"
     "@civ-clone/core-player" "^0.1.0"
     "@civ-clone/core-registry" "^0.1.0"
     "@civ-clone/core-rule" "^0.1.0"
+    "@civ-clone/core-yield" "^0.1.0"
 
 "@civ-clone/core-city@^0.1.0":
   "integrity" "sha512-ZiRhHqVWKd96PtwgMzxJOQ47kAvsC1n7ALE3zBI1x4z6CETiV0hhmSolWrQdfW4Gdl53JxW1XtgZlM26gu2grQ=="
@@ -106,20 +94,6 @@
   dependencies:
     "@civ-clone/core-engine" "^0.1.0"
     "@civ-clone/core-rule" "^0.1.0"
-    "@civ-clone/core-yield" "^0.1.0"
-
-"@civ-clone/core-unit@^0.1.0":
-  "integrity" "sha512-N0eelcrSvmCL02aXD9JrNb1pWQS3RiOPWejtZILKLfCIePqMQRDAw8OUZweaqggxczjOvmzzjmcYo1tgNQjE8Q=="
-  "resolved" "https://registry.npmjs.org/@civ-clone/core-unit/-/core-unit-0.1.8.tgz"
-  "version" "0.1.8"
-  dependencies:
-    "@civ-clone/core-city" "^0.1.0"
-    "@civ-clone/core-data-object" "^0.1.0"
-    "@civ-clone/core-player" "^0.1.0"
-    "@civ-clone/core-registry" "^0.1.0"
-    "@civ-clone/core-rule" "^0.1.0"
-    "@civ-clone/core-turn-based-game" "^0.1.0"
-    "@civ-clone/core-world" "^0.1.0"
     "@civ-clone/core-yield" "^0.1.0"
 
 "@civ-clone/core-world-generator@^0.1.0":
@@ -653,17 +627,17 @@
   dependencies:
     "brace-expansion" "^1.1.7"
 
-"minimatch@3.0.4":
-  "integrity" "sha512-yJHVQEhyqPLUTgt9B83PXu6W3rx4MvvHvSUvToogpwoGDOUQ+yDrR0HRot+yOCdCO7u4hX3pWft6kWBBcqh0UA=="
-  "resolved" "https://registry.npmjs.org/minimatch/-/minimatch-3.0.4.tgz"
-  "version" "3.0.4"
+"minimatch@4.2.1":
+  "integrity" "sha512-9Uq1ChtSZO+Mxa/CL1eGizn2vRn3MlLgzhT0Iz8zaY8NdvxvB0d5QdPFmCKf7JKA9Lerx5vRrnwO03jsSfGG9g=="
+  "resolved" "https://registry.npmjs.org/minimatch/-/minimatch-4.2.1.tgz"
+  "version" "4.2.1"
   dependencies:
     "brace-expansion" "^1.1.7"
 
 "minimist@^1.2.0", "minimist@^1.2.5":
-  "integrity" "sha512-FM9nNUYrRBAELZQT3xeZQ7fmMOBg6nWNmJKTcgsJeaLstP/UODVpGsr5OhXhhXg6f+qtJ8uiZ+PUxkDWcgIXLw=="
-  "resolved" "https://registry.npmjs.org/minimist/-/minimist-1.2.5.tgz"
-  "version" "1.2.5"
+  "integrity" "sha512-Jsjnk4bw3YJqYzbdyBiNsPWHPfO++UGG749Cxs6peCu5Xg4nrena6OVxOYxrQTqww0Jmwt+Ref8rggumkTLz9Q=="
+  "resolved" "https://registry.npmjs.org/minimist/-/minimist-1.2.6.tgz"
+  "version" "1.2.6"
 
 "mkdirp@^0.5.1":
   "integrity" "sha512-NKmAlESf6jMGym1++R0Ra7wvhV+wFW63FaSOFPwRahvea0gMUcGUhVeAg/0BC0wiv9ih5NYPB1Wn1UEI1/L+xQ=="
@@ -673,9 +647,9 @@
     "minimist" "^1.2.5"
 
 "mocha@^3.X.X || ^4.X.X || ^5.X.X || ^6.X.X || ^7.X.X || ^8.X.X || ^9.X.X", "mocha@^9.0.0":
-  "integrity" "sha512-T7uscqjJVS46Pq1XDXyo9Uvey9gd3huT/DD9cYBb4K2Xc/vbKRPUWK067bxDQRK0yIz6Jxk73IrnimvASzBNAQ=="
-  "resolved" "https://registry.npmjs.org/mocha/-/mocha-9.2.1.tgz"
-  "version" "9.2.1"
+  "integrity" "sha512-L6XC3EdwT6YrIk0yXpavvLkn8h+EU+Y5UcCHKECyMbdUIxyMuZj4bX4U9e1nvnvUUvQVsV2VHQr5zLdcUkhW/g=="
+  "resolved" "https://registry.npmjs.org/mocha/-/mocha-9.2.2.tgz"
+  "version" "9.2.2"
   dependencies:
     "@ungap/promise-all-settled" "1.1.2"
     "ansi-colors" "4.1.1"
@@ -690,9 +664,9 @@
     "he" "1.2.0"
     "js-yaml" "4.1.0"
     "log-symbols" "4.1.0"
-    "minimatch" "3.0.4"
+    "minimatch" "4.2.1"
     "ms" "2.1.3"
-    "nanoid" "3.2.0"
+    "nanoid" "3.3.1"
     "serialize-javascript" "6.0.0"
     "strip-json-comments" "3.1.1"
     "supports-color" "8.1.1"
@@ -712,10 +686,10 @@
   "resolved" "https://registry.npmjs.org/ms/-/ms-2.1.3.tgz"
   "version" "2.1.3"
 
-"nanoid@3.2.0":
-  "integrity" "sha512-fmsZYa9lpn69Ad5eDn7FMcnnSR+8R34W9qJEijxYhTbfOWzr22n1QxCMzXLK+ODyW2973V3Fux959iQoUxzUIA=="
-  "resolved" "https://registry.npmjs.org/nanoid/-/nanoid-3.2.0.tgz"
-  "version" "3.2.0"
+"nanoid@3.3.1":
+  "integrity" "sha512-n6Vs/3KGyxPQd6uO0eH4Bv0ojGSUvuLlIHtC3Y0kEO23YRge8H9x1GCzLn28YX0H66pMkxuaeESFq4tKISKwdw=="
+  "resolved" "https://registry.npmjs.org/nanoid/-/nanoid-3.3.1.tgz"
+  "version" "3.3.1"
 
 "normalize-path@^3.0.0", "normalize-path@~3.0.0":
   "integrity" "sha512-6eZs5Ls3WtCisHWp9S2GUy8dqkpGi4BVSz3GaqiE6ezub0512ESztXUwUB6C6IKbQkY2Pnb/mD4WYojCRwcwLA=="
