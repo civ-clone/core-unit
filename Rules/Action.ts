@@ -1,4 +1,3 @@
-import { IRuleRegistry } from '@civ-clone/core-rule/RuleRegistry';
 import Criterion from '@civ-clone/core-rule/Criterion';
 import Effect from '@civ-clone/core-rule/Effect';
 import Priority from '@civ-clone/core-rule/Priority';
@@ -10,9 +9,6 @@ import UnitAction from '../Action';
 export class Action extends Rule<[Unit, Tile, Tile], UnitAction> {}
 
 export default Action;
-
-export interface IActionRegistry
-  extends IRuleRegistry<Action, [Unit, Tile, Tile], UnitAction> {}
 
 export const hasMovesLeft = new Criterion(
   (unit: Unit): boolean => unit.moves().value() >= 0.1

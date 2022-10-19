@@ -1,10 +1,5 @@
 import { Attack, Defence, Movement, Visibility } from '../Yields';
-import {
-  Yield as YieldRule,
-  BaseYield,
-  unitYield,
-  IBaseYieldRegistry,
-} from '../Rules/Yield';
+import { Yield as YieldRule, BaseYield, unitYield } from '../Rules/Yield';
 import Action from '../Action';
 import Activate from '../Rules/Activate';
 import Busy from '../Rules/Busy';
@@ -62,10 +57,10 @@ describe('Unit', (): void => {
     const unit = new Unit(null, new Player(), generateTile()),
       action = new Action(generateTile(), generateTile(), unit);
 
-    unit.action = chai.spy(unit.action);
+    action.perform = chai.spy(action.perform);
 
-    expect(unit.action(action)).to.undefined;
-    expect(unit.action).to.called.once;
+    unit.action(action);
+    expect(action.perform).to.called.once;
   });
 
   it('should return valid `Action`s', (): void => {
@@ -154,7 +149,7 @@ describe('Unit', (): void => {
         [new Visibility(), 8],
       ] as [Yield, number][]
     ).forEach(([unitYield, expectedValue]: [Yield, number]): void => {
-      (ruleRegistry as IBaseYieldRegistry).process(BaseYield, Unit, unitYield);
+      ruleRegistry.process(BaseYield, Unit, unitYield);
 
       expect(unitYield.value()).to.eql(expectedValue);
     });

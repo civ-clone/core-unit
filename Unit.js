@@ -13,13 +13,13 @@ var __classPrivateFieldGet = (this && this.__classPrivateFieldGet) || function (
 var _Unit_active, _Unit_busy, _Unit_city, _Unit_destroyed, _Unit_moves, _Unit_player, _Unit_ruleRegistry, _Unit_status, _Unit_tile, _Unit_waiting;
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.Unit = void 0;
-const Action_1 = require("./Rules/Action");
-const Activate_1 = require("./Rules/Activate");
 const Yields_1 = require("./Yields");
 const Buildable_1 = require("@civ-clone/core-city-build/Buildable");
+const RuleRegistry_1 = require("@civ-clone/core-rule/RuleRegistry");
+const Action_1 = require("./Rules/Action");
+const Activate_1 = require("./Rules/Activate");
 const Created_1 = require("./Rules/Created");
 const Destroyed_1 = require("./Rules/Destroyed");
-const RuleRegistry_1 = require("@civ-clone/core-rule/RuleRegistry");
 const Visibility_1 = require("./Rules/Visibility");
 const Yield_1 = require("./Rules/Yield");
 // https://github.com/microsoft/TypeScript/issues/4628
@@ -42,7 +42,7 @@ class Unit extends Buildable_1.Buildable {
         __classPrivateFieldSet(this, _Unit_tile, tile, "f");
         __classPrivateFieldSet(this, _Unit_ruleRegistry, ruleRegistry, "f");
         this.addKey('actions', 'actionsForNeighbours', 'active', 'attack', 'busy', 'city', 'defence', 'movement', 'moves', 'player', 'status', 'tile', 'visibility', 'waiting');
-        __classPrivateFieldGet(this, _Unit_ruleRegistry, "f").process(Created_1.Created, this);
+        __classPrivateFieldGet(this, _Unit_ruleRegistry, "f").process(Created_1.default, this);
     }
     action(action, ...args) {
         return action.perform(...args);
@@ -51,16 +51,16 @@ class Unit extends Buildable_1.Buildable {
         if (typeof to === 'string') {
             to = from.getNeighbour(to);
         }
-        return __classPrivateFieldGet(this, _Unit_ruleRegistry, "f").process(Action_1.Action, this, to, from);
+        return __classPrivateFieldGet(this, _Unit_ruleRegistry, "f").process(Action_1.default, this, to, from);
     }
     actionsForNeighbours(from = __classPrivateFieldGet(this, _Unit_tile, "f")) {
         return from.getNeighbouringDirections().reduce((object, direction) => ({
             ...object,
-            [direction]: __classPrivateFieldGet(this, _Unit_ruleRegistry, "f").process(Action_1.Action, this, from.getNeighbour(direction), from),
+            [direction]: __classPrivateFieldGet(this, _Unit_ruleRegistry, "f").process(Action_1.default, this, from.getNeighbour(direction), from),
         }), {});
     }
     activate() {
-        __classPrivateFieldGet(this, _Unit_ruleRegistry, "f").process(Activate_1.Activate, this);
+        __classPrivateFieldGet(this, _Unit_ruleRegistry, "f").process(Activate_1.default, this);
     }
     active() {
         return __classPrivateFieldGet(this, _Unit_active, "f");
@@ -69,12 +69,11 @@ class Unit extends Buildable_1.Buildable {
         __classPrivateFieldSet(this, _Unit_active, active, "f");
     }
     applyVisibility() {
-        const rules = __classPrivateFieldGet(this, _Unit_ruleRegistry, "f").get(Visibility_1.Visibility);
         __classPrivateFieldGet(this, _Unit_tile, "f")
             .getSurroundingArea(this.visibility().value())
-            .forEach((tile) => rules
-            .filter((rule) => rule.validate(tile, __classPrivateFieldGet(this, _Unit_player, "f")))
-            .forEach((rule) => rule.process(tile, __classPrivateFieldGet(this, _Unit_player, "f"))));
+            .forEach((tile) => {
+            __classPrivateFieldGet(this, _Unit_ruleRegistry, "f").process(Visibility_1.default, tile, __classPrivateFieldGet(this, _Unit_player, "f"));
+        });
     }
     attack() {
         const [unitYield] = this.yield(new Yields_1.Attack());
@@ -97,7 +96,7 @@ class Unit extends Buildable_1.Buildable {
         return unitYield;
     }
     destroy(player = null) {
-        __classPrivateFieldGet(this, _Unit_ruleRegistry, "f").process(Destroyed_1.Destroyed, this, player);
+        __classPrivateFieldGet(this, _Unit_ruleRegistry, "f").process(Destroyed_1.default, this, player);
     }
     destroyed() {
         return __classPrivateFieldGet(this, _Unit_destroyed, "f");
@@ -138,7 +137,7 @@ class Unit extends Buildable_1.Buildable {
         __classPrivateFieldSet(this, _Unit_waiting, waiting, "f");
     }
     yield(...yields) {
-        const rules = __classPrivateFieldGet(this, _Unit_ruleRegistry, "f").get(Yield_1.Yield);
+        const rules = __classPrivateFieldGet(this, _Unit_ruleRegistry, "f").get(Yield_1.default);
         yields.forEach((unitYield) => rules
             .filter((rule) => rule.validate(this, unitYield))
             .forEach((rule) => rule.process(this, unitYield)));

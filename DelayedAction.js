@@ -14,12 +14,12 @@ var _DelayedAction_turn;
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.DelayedAction = void 0;
 const Action_1 = require("./Action");
-const Moved_1 = require("./Rules/Moved");
 const RuleRegistry_1 = require("@civ-clone/core-rule/RuleRegistry");
 const Turn_1 = require("@civ-clone/core-turn-based-game/Turn");
 const Busy_1 = require("./Rules/Busy");
 const Criterion_1 = require("@civ-clone/core-rule/Criterion");
 const Effect_1 = require("@civ-clone/core-rule/Effect");
+const Moved_1 = require("./Rules/Moved");
 class DelayedAction extends Action_1.Action {
     constructor(from, to, unit, ruleRegistry = RuleRegistry_1.instance, turn = Turn_1.instance) {
         super(from, to, unit, ruleRegistry);
@@ -35,7 +35,7 @@ class DelayedAction extends Action_1.Action {
             unit.setActive();
             unit.setBusy();
             action(...args);
-            this.ruleRegistry().process(Moved_1.Moved, this.unit(), this);
+            this.ruleRegistry().process(Moved_1.default, this.unit(), this);
         })));
     }
 }

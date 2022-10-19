@@ -1,7 +1,6 @@
 import { Attack, Defence, Movement, Visibility } from '../Yields';
 import Criterion from '@civ-clone/core-rule/Criterion';
 import Effect from '@civ-clone/core-rule/Effect';
-import { IRuleRegistry } from '@civ-clone/core-rule/RuleRegistry';
 import Rule from '@civ-clone/core-rule/Rule';
 import Unit from '../Unit';
 import YieldValue from '@civ-clone/core-yield/Yield';
@@ -10,16 +9,11 @@ type BaseYieldArgs = [typeof Unit, YieldValue];
 
 export class BaseYield extends Rule<BaseYieldArgs, void> {}
 
-export interface IBaseYieldRegistry
-  extends IRuleRegistry<BaseYield, BaseYieldArgs, void> {}
-
 type YieldArgs = [Unit, YieldValue];
 
 export class Yield extends Rule<YieldArgs, void> {}
 
 export default Yield;
-
-export interface IYieldRegistry extends IRuleRegistry<Yield, YieldArgs, void> {}
 
 export const unitYield: (
   UnitType: typeof Unit,

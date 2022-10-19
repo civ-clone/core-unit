@@ -1,24 +1,21 @@
-import { Action as ActionRule, IActionRegistry } from './Rules/Action';
-import { Activate, IActivateRegistry } from './Rules/Activate';
 import { Attack, Defence, Movement, Moves, Visibility } from './Yields';
 import { Buildable, IBuildable } from '@civ-clone/core-city-build/Buildable';
-import { Created, ICreatedRegistry } from './Rules/Created';
-import { Destroyed, IDestroyedRegistry } from './Rules/Destroyed';
 import {
   RuleRegistry,
   instance as ruleRegistryInstance,
 } from '@civ-clone/core-rule/RuleRegistry';
 import { Tile, INeighbouringTiles } from '@civ-clone/core-world/Tile';
-import {
-  Visibility as VisibilityRule,
-  IVisibilityRegistry,
-} from './Rules/Visibility';
-import { Yield as YieldRule, IYieldRegistry } from './Rules/Yield';
 import Action from './Action';
+import ActionRule from './Rules/Action';
+import Activate from './Rules/Activate';
 import Busy from './Rules/Busy';
 import City from '@civ-clone/core-city/City';
+import Created from './Rules/Created';
+import Destroyed from './Rules/Destroyed';
 import Player from '@civ-clone/core-player/Player';
+import VisibilityRule from './Rules/Visibility';
 import Yield from '@civ-clone/core-yield/Yield';
+import YieldRule from './Rules/Yield';
 
 export type IActionsForNeighbours = {
   [key: string]: Action[];
@@ -99,7 +96,7 @@ export class Unit extends Buildable implements IUnit {
       'waiting'
     );
 
-    (this.#ruleRegistry as ICreatedRegistry).process(Created, this);
+    this.#ruleRegistry.process(Created, this);
   }
 
   action(action: Action, ...args: any[]): void {
@@ -114,12 +111,7 @@ export class Unit extends Buildable implements IUnit {
       to = from.getNeighbour(to);
     }
 
-    return (this.#ruleRegistry as IActionRegistry).process(
-      ActionRule,
-      this,
-      to,
-      from
-    );
+    return this.#ruleRegistry.process(ActionRule, this, to, from);
   }
 
   actionsForNeighbours(from: Tile = this.#tile): IActionsForNeighbours {
@@ -129,7 +121,7 @@ export class Unit extends Buildable implements IUnit {
         direction: INeighbouringTiles
       ): IActionsForNeighbours => ({
         ...object,
-        [direction]: (this.#ruleRegistry as IActionRegistry).process(
+        [direction]: this.#ruleRegistry.process(
           ActionRule,
           this,
           from.getNeighbour(direction),
@@ -141,7 +133,7 @@ export class Unit extends Buildable implements IUnit {
   }
 
   activate(): void {
-    (this.#ruleRegistry as IActivateRegistry).process(Activate, this);
+    this.#ruleRegistry.process(Activate, this);
   }
 
   active(): boolean {
@@ -153,21 +145,11 @@ export class Unit extends Buildable implements IUnit {
   }
 
   applyVisibility(): void {
-    const rules = (this.#ruleRegistry as IVisibilityRegistry).get(
-      VisibilityRule
-    );
-
     this.#tile
       .getSurroundingArea(this.visibility().value())
-      .forEach((tile: Tile): void =>
-        rules
-          .filter((rule: VisibilityRule): boolean =>
-            rule.validate(tile, this.#player)
-          )
-          .forEach((rule: VisibilityRule): void =>
-            rule.process(tile, this.#player)
-          )
-      );
+      .forEach((tile: Tile): void => {
+        this.#ruleRegistry.process(VisibilityRule, tile, this.#player);
+      });
   }
 
   attack(): Attack {
@@ -199,7 +181,7 @@ export class Unit extends Buildable implements IUnit {
   }
 
   destroy(player: Player | null = null): void {
-    (this.#ruleRegistry as IDestroyedRegistry).process(Destroyed, this, player);
+    this.#ruleRegistry.process(Destroyed, this, player);
   }
 
   destroyed(): boolean {
@@ -255,7 +237,7 @@ export class Unit extends Buildable implements IUnit {
   }
 
   yield(...yields: Yield[]): Yield[] {
-    const rules = (this.#ruleRegistry as IYieldRegistry).get(YieldRule);
+    const rules = this.#ruleRegistry.get(YieldRule);
 
     yields.forEach((unitYield: Yield): void =>
       rules
