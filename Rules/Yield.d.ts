@@ -8,8 +8,8 @@ export declare class Yield extends Rule<YieldArgs, void> {}
 export default Yield;
 export declare const unitYield: (
   UnitType: typeof Unit,
-  attack: number,
-  defence: number,
-  movement: number,
-  visibility: number
+  attack?: number,
+  defence?: number,
+  movement?: number,
+  visibility?: number
 ) => (Yield | BaseYield)[];

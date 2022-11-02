@@ -14,7 +14,7 @@ declare type IBusy = Busy | null;
 declare type ICity = City | null;
 export interface IUnit extends IBuildable {
   action(action: Action, ...args: any[]): void;
-  actions(to: INeighbouringTiles | Tile, from: Tile): Action[];
+  actions(to?: INeighbouringTiles | Tile, from?: Tile): Action[];
   actionsForNeighbours(from: Tile): IActionsForNeighbours;
   activate(): void;
   active(): boolean;
@@ -22,10 +22,10 @@ export interface IUnit extends IBuildable {
   applyVisibility(): void;
   attack(): Attack;
   busy(): IBusy;
-  setBusy(rule: IBusy): void;
+  setBusy(rule?: IBusy): void;
   city(): ICity;
   defence(): Defence;
-  destroy(player: Player | null): void;
+  destroy(player?: Player | null): void;
   destroyed(): boolean;
   setDestroyed(): void;
   movement(): Movement;
@@ -37,7 +37,7 @@ export interface IUnit extends IBuildable {
   setTile(tile: Tile): void;
   visibility(): Visibility;
   waiting(): boolean;
-  setWaiting(waiting: boolean): void;
+  setWaiting(waiting?: boolean): void;
   yield(...yields: Yield[]): Yield[];
 }
 export declare class Unit extends Buildable implements IUnit {

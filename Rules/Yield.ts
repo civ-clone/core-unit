@@ -17,10 +17,10 @@ export default Yield;
 
 export const unitYield: (
   UnitType: typeof Unit,
-  attack: number,
-  defence: number,
-  movement: number,
-  visibility: number
+  attack?: number,
+  defence?: number,
+  movement?: number,
+  visibility?: number
 ) => (Yield | BaseYield)[] = (
   UnitType: typeof Unit,
   attack: number = 1,
