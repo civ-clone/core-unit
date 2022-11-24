@@ -9,7 +9,7 @@ import Unit from './Unit';
 
 export interface IUnitRegistry extends IEntityRegistry<Unit> {
   getByCity(city: City): Unit[];
-  getByPlayer(player: Player): Unit[];
+  getByPlayer(player: Player, includeDestroyed?: boolean): Unit[];
   getByTile(tile: Tile): Unit[];
 }
 
@@ -22,15 +22,25 @@ export class UnitRegistry
   }
 
   getByCity(city: City): Unit[] {
-    return this.getBy('city', city);
+    return this.filter(
+      (unit: Unit) => unit.city() === city && !unit.destroyed()
+    );
   }
 
-  getByPlayer(player: Player): Unit[] {
-    return this.getBy('player', player);
+  getByPlayer(player: Player, includeDestroyed: boolean = false): Unit[] {
+    if (includeDestroyed) {
+      return this.getBy('player', player);
+    }
+
+    return this.filter(
+      (unit: Unit) => unit.player() === player && !unit.destroyed()
+    );
   }
 
   getByTile(tile: Tile): Unit[] {
-    return this.getBy('tile', tile);
+    return this.filter(
+      (unit: Unit) => unit.tile() === tile && !unit.destroyed()
+    );
   }
 }
 

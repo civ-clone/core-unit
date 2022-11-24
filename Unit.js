@@ -22,8 +22,6 @@ const Created_1 = require("./Rules/Created");
 const Destroyed_1 = require("./Rules/Destroyed");
 const Visibility_1 = require("./Rules/Visibility");
 const Yield_1 = require("./Rules/Yield");
-// https://github.com/microsoft/TypeScript/issues/4628
-// @ts-expect-error
 class Unit extends Buildable_1.Buildable {
     constructor(city, player, tile, ruleRegistry = RuleRegistry_1.instance) {
         super();
@@ -41,8 +39,11 @@ class Unit extends Buildable_1.Buildable {
         __classPrivateFieldSet(this, _Unit_player, player, "f");
         __classPrivateFieldSet(this, _Unit_tile, tile, "f");
         __classPrivateFieldSet(this, _Unit_ruleRegistry, ruleRegistry, "f");
-        this.addKey('actions', 'actionsForNeighbours', 'active', 'attack', 'busy', 'city', 'defence', 'movement', 'moves', 'player', 'status', 'tile', 'visibility', 'waiting');
+        this.addKey('actions', 'actionsForNeighbours', 'active', 'attack', 'busy', 'city', 'defence', 'destroyed', 'movement', 'moves', 'player', 'status', 'tile', 'visibility', 'waiting');
         __classPrivateFieldGet(this, _Unit_ruleRegistry, "f").process(Created_1.default, this);
+    }
+    static build(city, ruleRegistry = RuleRegistry_1.instance) {
+        return new this(city, city.player(), city.tile(), ruleRegistry);
     }
     action(action, ...args) {
         return action.perform(...args);
@@ -87,9 +88,6 @@ class Unit extends Buildable_1.Buildable {
     }
     city() {
         return __classPrivateFieldGet(this, _Unit_city, "f");
-    }
-    static build(city, ruleRegistry = RuleRegistry_1.instance) {
-        return new this(city, city.player(), city.tile(), ruleRegistry);
     }
     defence() {
         const [unitYield] = this.yield(new Yields_1.Defence());

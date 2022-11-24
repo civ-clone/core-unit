@@ -8,7 +8,7 @@ import Tile from '@civ-clone/core-world/Tile';
 import Unit from './Unit';
 export interface IUnitRegistry extends IEntityRegistry<Unit> {
   getByCity(city: City): Unit[];
-  getByPlayer(player: Player): Unit[];
+  getByPlayer(player: Player, includeDestroyed?: boolean): Unit[];
   getByTile(tile: Tile): Unit[];
 }
 export declare class UnitRegistry
@@ -17,7 +17,7 @@ export declare class UnitRegistry
 {
   constructor();
   getByCity(city: City): Unit[];
-  getByPlayer(player: Player): Unit[];
+  getByPlayer(player: Player, includeDestroyed?: boolean): Unit[];
   getByTile(tile: Tile): Unit[];
 }
 export declare const instance: UnitRegistry;

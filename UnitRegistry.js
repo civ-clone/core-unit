@@ -8,13 +8,16 @@ class UnitRegistry extends EntityRegistry_1.EntityRegistry {
         super(Unit_1.default);
     }
     getByCity(city) {
-        return this.getBy('city', city);
+        return this.filter((unit) => unit.city() === city && !unit.destroyed());
     }
-    getByPlayer(player) {
-        return this.getBy('player', player);
+    getByPlayer(player, includeDestroyed = false) {
+        if (includeDestroyed) {
+            return this.getBy('player', player);
+        }
+        return this.filter((unit) => unit.player() === player && !unit.destroyed());
     }
     getByTile(tile) {
-        return this.getBy('tile', tile);
+        return this.filter((unit) => unit.tile() === tile && !unit.destroyed());
     }
 }
 exports.UnitRegistry = UnitRegistry;

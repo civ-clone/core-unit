@@ -1,5 +1,8 @@
 import { Attack, Defence, Movement, Moves, Visibility } from './Yields';
-import { Buildable, IBuildable } from '@civ-clone/core-city-build/Buildable';
+import {
+  Buildable,
+  BuildableInstance,
+} from '@civ-clone/core-city-build/Buildable';
 import { RuleRegistry } from '@civ-clone/core-rule/RuleRegistry';
 import { Tile, INeighbouringTiles } from '@civ-clone/core-world/Tile';
 import Action from './Action';
@@ -7,12 +10,13 @@ import Busy from './Rules/Busy';
 import City from '@civ-clone/core-city/City';
 import Player from '@civ-clone/core-player/Player';
 import Yield from '@civ-clone/core-yield/Yield';
+import { IDataObject } from '@civ-clone/core-data-object/DataObject';
 export declare type IActionsForNeighbours = {
   [key: string]: Action[];
 };
 declare type IBusy = Busy | null;
 declare type ICity = City | null;
-export interface IUnit extends IBuildable {
+export interface IUnit extends IDataObject {
   action(action: Action, ...args: any[]): void;
   actions(to?: INeighbouringTiles | Tile, from?: Tile): Action[];
   actionsForNeighbours(from: Tile): IActionsForNeighbours;
@@ -48,6 +52,7 @@ export declare class Unit extends Buildable implements IUnit {
     tile: Tile,
     ruleRegistry?: RuleRegistry
   );
+  static build(city: City, ruleRegistry?: RuleRegistry): BuildableInstance;
   action(action: Action, ...args: any[]): void;
   actions(to?: INeighbouringTiles | Tile, from?: Tile): Action[];
   actionsForNeighbours(from?: Tile): IActionsForNeighbours;
@@ -59,7 +64,6 @@ export declare class Unit extends Buildable implements IUnit {
   busy(): IBusy;
   setBusy(rule?: IBusy): void;
   city(): ICity;
-  static build(city: City, ruleRegistry?: RuleRegistry): Unit;
   defence(): Defence;
   destroy(player?: Player | null): void;
   destroyed(): boolean;

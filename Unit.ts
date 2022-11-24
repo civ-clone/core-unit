@@ -1,5 +1,9 @@
 import { Attack, Defence, Movement, Moves, Visibility } from './Yields';
-import { Buildable, IBuildable } from '@civ-clone/core-city-build/Buildable';
+import {
+  Buildable,
+  BuildableInstance,
+  IBuildable,
+} from '@civ-clone/core-city-build/Buildable';
 import {
   RuleRegistry,
   instance as ruleRegistryInstance,
@@ -16,6 +20,7 @@ import Player from '@civ-clone/core-player/Player';
 import VisibilityRule from './Rules/Visibility';
 import Yield from '@civ-clone/core-yield/Yield';
 import YieldRule from './Rules/Yield';
+import { IDataObject } from '@civ-clone/core-data-object/DataObject';
 
 export type IActionsForNeighbours = {
   [key: string]: Action[];
@@ -23,7 +28,7 @@ export type IActionsForNeighbours = {
 type IBusy = Busy | null;
 type ICity = City | null;
 
-export interface IUnit extends IBuildable {
+export interface IUnit extends IDataObject {
   action(action: Action, ...args: any[]): void;
   actions(to?: INeighbouringTiles | Tile, from?: Tile): Action[];
   actionsForNeighbours(from: Tile): IActionsForNeighbours;
@@ -52,8 +57,6 @@ export interface IUnit extends IBuildable {
   yield(...yields: Yield[]): Yield[];
 }
 
-// https://github.com/microsoft/TypeScript/issues/4628
-// @ts-expect-error
 export class Unit extends Buildable implements IUnit {
   #active: boolean = true;
   #busy: IBusy = null;
@@ -87,6 +90,7 @@ export class Unit extends Buildable implements IUnit {
       'busy',
       'city',
       'defence',
+      'destroyed',
       'movement',
       'moves',
       'player',
@@ -97,6 +101,18 @@ export class Unit extends Buildable implements IUnit {
     );
 
     this.#ruleRegistry.process(Created, this);
+  }
+
+  static build(
+    city: City,
+    ruleRegistry: RuleRegistry = ruleRegistryInstance
+  ): BuildableInstance {
+    return new this(
+      city,
+      city.player(),
+      city.tile(),
+      ruleRegistry
+    ) as BuildableInstance;
   }
 
   action(action: Action, ...args: any[]): void {
@@ -168,10 +184,6 @@ export class Unit extends Buildable implements IUnit {
 
   city(): ICity {
     return this.#city;
-  }
-
-  static build(city: City, ruleRegistry: RuleRegistry = ruleRegistryInstance) {
-    return new this(city, city.player(), city.tile(), ruleRegistry);
   }
 
   defence(): Defence {

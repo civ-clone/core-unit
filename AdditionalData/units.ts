@@ -14,7 +14,7 @@ export const getAdditionalData = (
     unitRegistry.getByCity(city)
   ),
   new AdditionalData(Player, 'units', (player: Player) =>
-    unitRegistry.getByPlayer(player)
+    unitRegistry.getByPlayer(player, true)
   ),
   new AdditionalData(Tile, 'units', (tile: Tile) =>
     unitRegistry.getByTile(tile)
