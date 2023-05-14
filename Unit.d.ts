@@ -11,11 +11,11 @@ import City from '@civ-clone/core-city/City';
 import Player from '@civ-clone/core-player/Player';
 import Yield from '@civ-clone/core-yield/Yield';
 import { IDataObject } from '@civ-clone/core-data-object/DataObject';
-export declare type IActionsForNeighbours = {
+export type IActionsForNeighbours = {
   [key: string]: Action[];
 };
-declare type IBusy = Busy | null;
-declare type ICity = City | null;
+type IBusy = Busy | null;
+type ICity = City | null;
 export interface IUnit extends IDataObject {
   action(action: Action, ...args: any[]): void;
   actions(to?: INeighbouringTiles | Tile, from?: Tile): Action[];
@@ -64,6 +64,7 @@ export declare class Unit extends Buildable implements IUnit {
   busy(): IBusy;
   setBusy(rule?: IBusy): void;
   city(): ICity;
+  setCity(city: City): void;
   defence(): Defence;
   destroy(player?: Player | null): void;
   destroyed(): boolean;

@@ -89,6 +89,12 @@ class Unit extends Buildable_1.Buildable {
     city() {
         return __classPrivateFieldGet(this, _Unit_city, "f");
     }
+    setCity(city) {
+        if (this.player() !== city.player()) {
+            return;
+        }
+        __classPrivateFieldSet(this, _Unit_city, city, "f");
+    }
     defence() {
         const [unitYield] = this.yield(new Yields_1.Defence());
         return unitYield;

@@ -186,6 +186,14 @@ export class Unit extends Buildable implements IUnit {
     return this.#city;
   }
 
+  setCity(city: City): void {
+    if (this.player() !== city.player()) {
+      return;
+    }
+
+    this.#city = city;
+  }
+
   defence(): Defence {
     const [unitYield] = this.yield(new Defence());
 

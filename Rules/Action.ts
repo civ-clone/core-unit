@@ -23,13 +23,9 @@ export const isNeighbouringTile: Criterion = new Criterion(
     to.isNeighbourOf(from)
 );
 
-export const unitAction: (
+export const unitAction = (
   ActionType: typeof UnitAction,
-  unitTypes: typeof Unit[],
-  ...additionalProperties: (Criterion | Priority)[]
-) => Action[] = (
-  ActionType: typeof UnitAction,
-  unitTypes: typeof Unit[],
+  unitTypes: (typeof Unit)[],
   ...additionalPriorities: (Criterion | Priority)[]
 ): Action[] => [
   new Action(

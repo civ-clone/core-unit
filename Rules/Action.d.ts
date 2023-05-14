@@ -11,6 +11,6 @@ export declare const isCurrentTile: Criterion;
 export declare const isNeighbouringTile: Criterion;
 export declare const unitAction: (
   ActionType: typeof UnitAction,
-  unitTypes: typeof Unit[],
-  ...additionalProperties: (Criterion | Priority)[]
+  unitTypes: (typeof Unit)[],
+  ...additionalPriorities: (Criterion | Priority)[]
 ) => Action[];

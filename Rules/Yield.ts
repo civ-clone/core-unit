@@ -15,13 +15,7 @@ export class Yield extends Rule<YieldArgs, void> {}
 
 export default Yield;
 
-export const unitYield: (
-  UnitType: typeof Unit,
-  attack?: number,
-  defence?: number,
-  movement?: number,
-  visibility?: number
-) => (Yield | BaseYield)[] = (
+export const unitYield = (
   UnitType: typeof Unit,
   attack: number = 1,
   defence: number = 1,
