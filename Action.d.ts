@@ -14,7 +14,10 @@ export interface IAction extends IDataObject {
   unit(): Unit;
 }
 export declare class Action extends DataObject implements IAction {
-  #private;
+  private _from;
+  private _ruleRegistry;
+  private _to;
+  private _unit;
   constructor(from: Tile, to: Tile, unit: Unit, ruleRegistry?: RuleRegistry);
   forUnit(unit: Unit): Action;
   from(): Tile;

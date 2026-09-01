@@ -19,7 +19,7 @@ export interface IDelayedAction extends IAction {
 }
 
 export class DelayedAction extends Action implements IDelayedAction {
-  #turn: Turn;
+  private _turn: Turn;
 
   constructor(
     from: Tile,
@@ -30,7 +30,7 @@ export class DelayedAction extends Action implements IDelayedAction {
   ) {
     super(from, to, unit, ruleRegistry);
 
-    this.#turn = turn;
+    this._turn = turn;
   }
 
   perform(
@@ -38,14 +38,14 @@ export class DelayedAction extends Action implements IDelayedAction {
     action: (...args: any[]) => void = () => {},
     BusyRule: typeof Busy = Busy
   ): void {
-    const endTurn: number = this.#turn.value() + turns;
+    const endTurn: number = this._turn.value() + turns;
 
     this.unit().setActive(false);
     this.unit().moves().set(0);
 
     this.unit().setBusy(
       new BusyRule(
-        new Criterion((): boolean => this.#turn.value() === endTurn),
+        new Criterion((): boolean => this._turn.value() === endTurn),
         new Effect((...args: any[]): void => {
           const unit: Unit = this.unit();
 

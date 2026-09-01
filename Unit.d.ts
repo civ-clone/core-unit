@@ -45,7 +45,16 @@ export interface IUnit extends IDataObject {
   yield(...yields: Yield[]): Yield[];
 }
 export declare class Unit extends Buildable implements IUnit {
-  #private;
+  private _active;
+  private _busy;
+  private _city;
+  private _destroyed;
+  private _moves;
+  private _player;
+  private _ruleRegistry;
+  private _status;
+  private _tile;
+  private _waiting;
   constructor(
     city: ICity | null,
     player: Player,

@@ -8,7 +8,7 @@ export interface IDelayedAction extends IAction {
   perform(turns: number, action: (...args: any[]) => void): void;
 }
 export declare class DelayedAction extends Action implements IDelayedAction {
-  #private;
+  private _turn;
   constructor(
     from: Tile,
     to: Tile,

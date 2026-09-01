@@ -19,10 +19,10 @@ export interface IAction extends IDataObject {
 }
 
 export class Action extends DataObject implements IAction {
-  #from: Tile;
-  #ruleRegistry: RuleRegistry;
-  #to: Tile;
-  #unit: Unit;
+  private _from: Tile;
+  private _ruleRegistry: RuleRegistry;
+  private _to: Tile;
+  private _unit: Unit;
 
   constructor(
     from: Tile,
@@ -32,39 +32,39 @@ export class Action extends DataObject implements IAction {
   ) {
     super();
 
-    this.#from = from;
-    this.#ruleRegistry = ruleRegistry;
-    this.#to = to;
-    this.#unit = unit;
+    this._from = from;
+    this._ruleRegistry = ruleRegistry;
+    this._to = to;
+    this._unit = unit;
 
     this.addKey('from', 'to');
   }
 
   forUnit(unit: Unit): Action {
     return new (<typeof Action>this.constructor)(
-      this.#from,
-      this.#to,
+      this._from,
+      this._to,
       unit,
-      this.#ruleRegistry
+      this._ruleRegistry
     );
   }
 
   from(): Tile {
-    return this.#from;
+    return this._from;
   }
 
   perform(...args: any[]): void {}
 
   ruleRegistry(): RuleRegistry {
-    return this.#ruleRegistry;
+    return this._ruleRegistry;
   }
 
   to(): Tile {
-    return this.#to;
+    return this._to;
   }
 
   unit(): Unit {
-    return this.#unit;
+    return this._unit;
   }
 }
 

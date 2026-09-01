@@ -58,16 +58,16 @@ export interface IUnit extends IDataObject {
 }
 
 export class Unit extends Buildable implements IUnit {
-  #active: boolean = true;
-  #busy: IBusy = null;
-  #city: ICity;
-  #destroyed: boolean = false;
-  #moves: Moves = new Moves();
-  #player: Player;
-  #ruleRegistry: RuleRegistry;
-  #status: Action | null = null;
-  #tile: Tile;
-  #waiting: boolean = false;
+  private _active: boolean = true;
+  private _busy: IBusy = null;
+  private _city: ICity;
+  private _destroyed: boolean = false;
+  private _moves: Moves = new Moves();
+  private _player: Player;
+  private _ruleRegistry: RuleRegistry;
+  private _status: Action | null = null;
+  private _tile: Tile;
+  private _waiting: boolean = false;
 
   constructor(
     city: ICity | null,
@@ -77,10 +77,10 @@ export class Unit extends Buildable implements IUnit {
   ) {
     super();
 
-    this.#city = city;
-    this.#player = player;
-    this.#tile = tile;
-    this.#ruleRegistry = ruleRegistry;
+    this._city = city;
+    this._player = player;
+    this._tile = tile;
+    this._ruleRegistry = ruleRegistry;
 
     this.addKey(
       'actions',
@@ -100,7 +100,7 @@ export class Unit extends Buildable implements IUnit {
       'waiting'
     );
 
-    this.#ruleRegistry.process(Created, this);
+    this._ruleRegistry.process(Created, this);
   }
 
   static build(
@@ -120,24 +120,24 @@ export class Unit extends Buildable implements IUnit {
   }
 
   actions(
-    to: INeighbouringTiles | Tile = this.#tile,
-    from: Tile = this.#tile
+    to: INeighbouringTiles | Tile = this._tile,
+    from: Tile = this._tile
   ): Action[] {
     if (typeof to === 'string') {
       to = from.getNeighbour(to);
     }
 
-    return this.#ruleRegistry.process(ActionRule, this, to, from);
+    return this._ruleRegistry.process(ActionRule, this, to, from);
   }
 
-  actionsForNeighbours(from: Tile = this.#tile): IActionsForNeighbours {
+  actionsForNeighbours(from: Tile = this._tile): IActionsForNeighbours {
     return from.getNeighbouringDirections().reduce(
       (
         object: IActionsForNeighbours,
         direction: INeighbouringTiles
       ): IActionsForNeighbours => ({
         ...object,
-        [direction]: this.#ruleRegistry.process(
+        [direction]: this._ruleRegistry.process(
           ActionRule,
           this,
           from.getNeighbour(direction),
@@ -149,22 +149,22 @@ export class Unit extends Buildable implements IUnit {
   }
 
   activate(): void {
-    this.#ruleRegistry.process(Activate, this);
+    this._ruleRegistry.process(Activate, this);
   }
 
   active(): boolean {
-    return this.#active;
+    return this._active;
   }
 
   setActive(active: boolean = true): void {
-    this.#active = active;
+    this._active = active;
   }
 
   applyVisibility(): void {
-    this.#tile
+    this._tile
       .getSurroundingArea(this.visibility().value())
       .forEach((tile: Tile): void => {
-        this.#ruleRegistry.process(VisibilityRule, tile, this.#player);
+        this._ruleRegistry.process(VisibilityRule, tile, this._player);
       });
   }
 
@@ -175,15 +175,15 @@ export class Unit extends Buildable implements IUnit {
   }
 
   busy(): IBusy {
-    return this.#busy;
+    return this._busy;
   }
 
   setBusy(rule: IBusy = null): void {
-    this.#busy = rule;
+    this._busy = rule;
   }
 
   city(): ICity {
-    return this.#city;
+    return this._city;
   }
 
   setCity(city: City): void {
@@ -191,7 +191,7 @@ export class Unit extends Buildable implements IUnit {
       return;
     }
 
-    this.#city = city;
+    this._city = city;
   }
 
   defence(): Defence {
@@ -201,15 +201,15 @@ export class Unit extends Buildable implements IUnit {
   }
 
   destroy(player: Player | null = null): void {
-    this.#ruleRegistry.process(Destroyed, this, player);
+    this._ruleRegistry.process(Destroyed, this, player);
   }
 
   destroyed(): boolean {
-    return this.#destroyed;
+    return this._destroyed;
   }
 
   setDestroyed(): void {
-    this.#destroyed = true;
+    this._destroyed = true;
   }
 
   movement(): Movement {
@@ -219,27 +219,27 @@ export class Unit extends Buildable implements IUnit {
   }
 
   moves(): Moves {
-    return this.#moves;
+    return this._moves;
   }
 
   player(): Player {
-    return this.#player;
+    return this._player;
   }
 
   status(): Action | null {
-    return this.#status;
+    return this._status;
   }
 
   setStatus(status: Action | null): void {
-    this.#status = status;
+    this._status = status;
   }
 
   tile(): Tile {
-    return this.#tile;
+    return this._tile;
   }
 
   setTile(tile: Tile): void {
-    this.#tile = tile;
+    this._tile = tile;
   }
 
   visibility(): Visibility {
@@ -249,15 +249,15 @@ export class Unit extends Buildable implements IUnit {
   }
 
   waiting(): boolean {
-    return this.#waiting;
+    return this._waiting;
   }
 
   setWaiting(waiting: boolean = true): void {
-    this.#waiting = waiting;
+    this._waiting = waiting;
   }
 
   yield(...yields: Yield[]): Yield[] {
-    const rules = this.#ruleRegistry.get(YieldRule);
+    const rules = this._ruleRegistry.get(YieldRule);
 
     yields.forEach((unitYield: Yield): void =>
       rules
