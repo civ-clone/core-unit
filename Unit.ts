@@ -58,6 +58,7 @@ export interface IUnit extends IDataObject {
 }
 
 export class Unit extends Buildable implements IUnit {
+  static readonly transient = ['_ruleRegistry'];
   private _active: boolean = true;
   private _busy: IBusy = null;
   private _city: ICity;

@@ -45,6 +45,7 @@ export interface IUnit extends IDataObject {
   yield(...yields: Yield[]): Yield[];
 }
 export declare class Unit extends Buildable implements IUnit {
+  static readonly transient: string[];
   private _active;
   private _busy;
   private _city;

@@ -133,5 +133,6 @@ class Unit extends Buildable_1.Buildable {
     }
 }
 exports.Unit = Unit;
+Unit.transient = ['_ruleRegistry'];
 exports.default = Unit;
 //# sourceMappingURL=Unit.js.map
