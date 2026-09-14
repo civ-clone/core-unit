@@ -16,48 +16,57 @@ exports.UnknownBusyError = UnknownBusyError;
  * `{ $class: '' }` for one.
  *
  * What makes a lookup sufficient — where it is sufficient — is that the class
- * carries no instance state. Twelve of the thirteen `Busy` subclasses are
- * literally `extends Busy {}`. `GoTo` looks like the exception and is not: the
- * path it follows lives in a `StrategyNote`, which is saved as ordinary state,
- * so the rule is only a "still going" predicate over something restored. But
- * the *construction* is where state hides, and for eight of them it does —
- * see below.
+ * carries no instance state. Almost every `Busy` subclass is literally
+ * `extends Busy {}`. But the *declaration* is not where to look: the state
+ * hides in the **construction**, at the call site, and for eleven of the
+ * fourteen it does. `GoTo` was originally judged the one exception and judged
+ * wrongly in both directions — see below.
  *
  * So a save records *which* `Busy` a unit has, and the ruleset says how to
- * rebuild it. Nothing is lost, because there was no instance state to lose.
+ * rebuild it. Where there was no instance state, nothing is lost.
  *
- * ## What this does *not* cover
+ * ## What this covers, and the one it does not
  *
- * Five of the thirteen are stateless in that sense: `Fortified`, `Fortifying`,
- * `Stowed`, `Sleeping` and `GoTo`. Their criteria are pure functions of the
- * world and the unit — "is an enemy visible", "have I reached the end of my
- * path", "never" — and any durable fact is saved separately. `Fortify` even
- * registers a `Fortified` *`UnitImprovement`* alongside the busy rule, and
- * that is ordinary saved state.
+ * Fourteen `Busy` identities, in three groups:
  *
- * The other eight come from `DelayedAction.perform`, and a factory cannot
- * rebuild them. That method closes over two things a save has no record of:
+ * - **Ten delayed actions** — `BuildingIrrigation`, `BuildingMine`,
+ *   `BuildingRoad`, `BuildingRailroad`, `ClearingForest`, `ClearingJungle`,
+ *   `ClearingSwamp`, `PlantingForest`, `Fortifying`, `Pillaging`. A factory
+ *   alone cannot rebuild these, because `DelayedAction.perform` closes over
+ *   two things a save has no record of:
  *
- * ```ts
- * const endTurn = this._turn.value() + turns;
+ *   ```ts
+ *   const endTurn = this._turn.value() + turns;
+ *   ```
  *
- * new BusyRule(
- *   new Criterion(() => this._turn.value() === endTurn),
- *   new Effect(() => { …; action(…); … })   // `action` builds the irrigation
- * );
- * ```
+ *   `endTurn` says *when* the work finishes and the action says *what it
+ *   does*. So they go through `registerDelayedAction`, which pairs the factory
+ *   with a `PendingEffect` carrying the completion turn. Registering one of
+ *   these here directly would mean inventing a completion turn, and a unit
+ *   three turns into a road would load either finished or never finishing.
  *
- * `endTurn` says *when* the work finishes and `action` says *what it does*.
- * Neither is derivable from the unit, so `BusyRegistry.register` must not be
- * used for them — a factory would have to invent a completion turn, and a unit
- * three turns into building a road would load either finished or never
- * finishing.
+ * - **Three that are genuinely stateless** — `Fortified` (`base-unit-action-
+ *   fortify`), `Sleeping` (`…-sleep`) and `Stowed` (`…-embark`). Their criteria
+ *   are pure functions of the unit and the world — "is an enemy visible",
+ *   "never" — and any durable fact is saved separately: `Fortify` registers a
+ *   `Fortified` *`UnitImprovement`* alongside the busy rule, and that is
+ *   ordinary state. Each registers a plain factory.
  *
- * That is not a gap in this registry; it is the same problem `PendingEffect`
- * exists for. A delayed action *is* a pending effect — "at turn N, do X" — so
- * it wants a handler identifier and `{ unit, endTurn }` as data, which is
- * exactly the shape `03-save-format.md` defines. Darwin's Voyage was thought
- * to be the only unserialisable continuation in the engine; it is one of nine.
+ * - **`GoTo`, which is not covered.** Its criterion is
+ *   `unit.tile() === path.end()`, and the path it compares against lives in a
+ *   `StrategyNote`. `StrategyNote` is **not** a `DataObject` — it implements
+ *   `IStrategyNote` and nothing more — so despite `core-save-game`
+ *   dispositioning `strategyNotes` as `'state'`, no path is written to the
+ *   file and there is nothing to rebuild the criterion from. A unit saved
+ *   mid-journey therefore fails to load, loudly, which is the correct answer
+ *   until either `StrategyNote` becomes saveable or `GoTo` keeps its path
+ *   somewhere that is.
+ *
+ * Counting them is worth doing rather than grepping for them: `grep -r` does
+ * **not** follow symlinks, and `node_modules/@civ-clone/*` are symlinks into
+ * pnpm's store. A `-r` search for `extends DelayedAction` there returns
+ * nothing at all, which is how `Fortify` and then `Pillage` were both missed.
+ * Use `grep -R`.
  */
 class BusyRegistry {
     constructor() {
