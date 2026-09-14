@@ -36,6 +36,7 @@
     "@civ-clone/core-city": "^0.1.0",
     "@civ-clone/core-city-build": "^0.1.3",
     "@civ-clone/core-data-object": "^0.1.16",
+    "@civ-clone/core-pending-effect": "^0.1.0",
     "@civ-clone/core-player": "^0.1.0",
     "@civ-clone/core-registry": "^0.1.0",
     "@civ-clone/core-rule": "^0.1.0",
