@@ -27,7 +27,7 @@ exports.UnknownBusyError = UnknownBusyError;
  *
  * ## What this covers, and the one it does not
  *
- * Fourteen `Busy` identities, in three groups:
+ * Fourteen `Busy` identities, all of them covered, in three groups:
  *
  * - **Ten delayed actions** — `BuildingIrrigation`, `BuildingMine`,
  *   `BuildingRoad`, `BuildingRailroad`, `ClearingForest`, `ClearingJungle`,
@@ -52,15 +52,16 @@ exports.UnknownBusyError = UnknownBusyError;
  *   `Fortified` *`UnitImprovement`* alongside the busy rule, and that is
  *   ordinary state. Each registers a plain factory.
  *
- * - **`GoTo`, which is not covered.** Its criterion is
- *   `unit.tile() === path.end()`, and the path it compares against lives in a
- *   `StrategyNote`. `StrategyNote` is **not** a `DataObject` — it implements
- *   `IStrategyNote` and nothing more — so despite `core-save-game`
- *   dispositioning `strategyNotes` as `'state'`, no path is written to the
- *   file and there is nothing to rebuild the criterion from. A unit saved
- *   mid-journey therefore fails to load, loudly, which is the correct answer
- *   until either `StrategyNote` becomes saveable or `GoTo` keeps its path
- *   somewhere that is.
+ * - **`GoTo`**, which took two changes elsewhere before it could be one of
+ *   them. Its criterion is `unit.tile() === path.end()` and the path lives in
+ *   a `StrategyNote`, which was not a `DataObject` — so despite
+ *   `core-save-game` dispositioning `strategyNotes` as `'state'`, nothing was
+ *   written and there was nothing to rebuild the criterion from. `StrategyNote`
+ *   is an entity now, and the note holds the remaining `Tile`s rather than the
+ *   `Path`, because `encode` writes a registry held as a field as an array of
+ *   its members and cannot record the class around it. Its criterion reads the
+ *   note each time instead of closing over it, which leaves nothing in the
+ *   rule but the unit.
  *
  * Counting them is worth doing rather than grepping for them: `grep -r` does
  * **not** follow symlinks, and `node_modules/@civ-clone/*` are symlinks into
