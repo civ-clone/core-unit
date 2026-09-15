@@ -8,7 +8,7 @@ import { BusyRegistry } from './BusyRegistry';
 import { Action } from './Action';
 import Busy from './Rules/Busy';
 import Unit from './Unit';
-export type DelayedActionDefinition = {
+export type DelayedActionDefinition<A extends Action = Action> = {
   /** The `Busy` rule this action puts its unit into. */
   BusyRule: typeof Busy;
   /**
@@ -21,11 +21,29 @@ export type DelayedActionDefinition = {
    * constructing each group separately; a single `new ActionType(...)` here
    * would pass a `Turn` where a registry was expected for four of the eight.
    */
-  action: (unit: Unit) => Action;
+  action: (unit: Unit) => A;
   /** `package:name`, recorded in the save in place of the closure. */
   handler: string;
-  /** What finishing actually does — build the irrigation, clear the forest. */
-  complete: (unit: Unit, pendingEffect: PendingEffect) => void;
+  /**
+   * What finishing actually does — build the irrigation, clear the forest.
+   *
+   * `action` is the action that was **performed**, when there is one: the
+   * `Busy` rule that discharges the effect holds it, and passes it through.
+   * Use its collaborators rather than reaching for singletons. The original
+   * completions were closures bound to `this`, so they wrote to the registries
+   * the action was constructed with; the first conversion to `PendingEffect`
+   * swapped seven of them for `…Instance` singletons, which the game never
+   * noticed (it uses the singletons) and every test with its own registries
+   * did — `Fortified` landed in a registry the test was not looking at.
+   *
+   * After a load there is no performed action, so it is rebuilt with the
+   * `action` factory above — defaults, which is all a load can do until
+   * plugins register against a game rather than at import.
+   *
+   * Third rather than first so that packages written against the two-argument
+   * form keep working: they ignore it.
+   */
+  complete: (unit: Unit, pendingEffect: PendingEffect, action: A) => void;
 };
 export declare class MissingPendingEffectError extends Error {}
 /**
@@ -54,8 +72,8 @@ export declare class MissingPendingEffectError extends Error {}
  * without it a restored completion would skip the renderer's redraw and the
  * visibility reapply.
  */
-export declare const registerDelayedAction: (
-  { action, BusyRule, complete, handler }: DelayedActionDefinition,
+export declare const registerDelayedAction: <A extends Action = Action>(
+  { action, BusyRule, complete, handler }: DelayedActionDefinition<A>,
   pendingEffects?: PendingEffectRegistry,
   busyRegistry?: BusyRegistry,
   ruleRegistry?: RuleRegistry,

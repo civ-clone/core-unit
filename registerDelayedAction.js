@@ -36,7 +36,11 @@ exports.MissingPendingEffectError = MissingPendingEffectError;
  * visibility reapply.
  */
 const registerDelayedAction = ({ action, BusyRule, complete, handler }, pendingEffects = core_pending_effect_1.instance, busyRegistry = BusyRegistry_1.instance, ruleRegistry = RuleRegistry_1.instance, turn = Turn_1.instance) => {
-    pendingEffects.handler(handler, (pendingEffect) => complete(pendingEffect.target(), pendingEffect));
+    pendingEffects.handler(handler, (pendingEffect, performed) => {
+        var _a;
+        const unit = pendingEffect.target();
+        complete(unit, pendingEffect, (_a = performed) !== null && _a !== void 0 ? _a : action(unit));
+    });
     busyRegistry.register(BusyRule, (unit) => {
         const [pendingEffect] = pendingEffects
             .getByTarget(unit)

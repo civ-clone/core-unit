@@ -50,7 +50,10 @@ export const delayedBusy = (
       // completion behaviour now lives — `new Irrigation(unit.tile())` and so
       // on. It used to be a closure passed to `perform`, which is exactly why
       // a part-built road could not be saved.
-      pendingEffects.discharge(pendingEffect);
+      //
+      // With the action, so completion writes to the registries it was
+      // constructed with — see `registerDelayedAction`'s `complete`.
+      pendingEffects.discharge(pendingEffect, action);
 
       ruleRegistry.process(Moved, unit, action);
     })
