@@ -16,6 +16,12 @@ const Moved_1 = require("./Rules/Moved");
  * the completion turn from the effect's data, the completion behaviour from the
  * handler the effect names, and the action from the caller. That is what makes
  * it reconstructible at all.
+ *
+ * `action` may be a function that builds the action, called only when the work
+ * finishes. A load has no performed action to hand over and has to build one,
+ * and an `Action` is an entity: constructing it during the load takes the next
+ * id from a counter `hydrate` has just restored, so saving the loaded game
+ * again wrote a different file (civ-clone/web-renderer#245).
  */
 const delayedBusy = (BusyRule, action, pendingEffect, pendingEffects, ruleRegistry, turn) => new BusyRule(
 // `>=`, not `===`. The original compared exactly, which means a unit whose
@@ -23,7 +29,8 @@ const delayedBusy = (BusyRule, action, pendingEffect, pendingEffects, ruleRegist
 // turn — stays busy for ever with nothing to say why. `>=` cannot get
 // stuck, and on the turn it is due the two agree.
 new Criterion_1.default(() => turn.value() >= Number(pendingEffect.data().endTurn)), new Effect_1.default(() => {
-    const unit = action.unit();
+    const performed = typeof action === 'function' ? action() : action;
+    const unit = performed.unit();
     unit.setActive();
     unit.setBusy();
     // Discharging runs the handler the effect names, which is where the
@@ -33,8 +40,8 @@ new Criterion_1.default(() => turn.value() >= Number(pendingEffect.data().endTur
     //
     // With the action, so completion writes to the registries it was
     // constructed with — see `registerDelayedAction`'s `complete`.
-    pendingEffects.discharge(pendingEffect, action);
-    ruleRegistry.process(Moved_1.default, unit, action);
+    pendingEffects.discharge(pendingEffect, performed);
+    ruleRegistry.process(Moved_1.default, unit, performed);
 }));
 exports.delayedBusy = delayedBusy;
 exports.default = exports.delayedBusy;

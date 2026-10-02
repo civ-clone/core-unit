@@ -1,6 +1,35 @@
 import Busy from './Rules/Busy';
+import { PendingEffectRegistry } from '@civ-clone/core-pending-effect';
+import { RuleRegistry } from '@civ-clone/core-rule/RuleRegistry';
+import { Turn } from '@civ-clone/core-turn-based-game/Turn';
 import Unit from './Unit';
 import { typeNameOf } from '@civ-clone/core-data-object/DataObject';
+
+/**
+ * The game a unit is being rebuilt into, as far as a factory needs to know it.
+ *
+ * Named after `Game`'s own slots, so a loader hands over the `Game` itself —
+ * this package cannot import `core-game`, which depends on it.
+ *
+ * **Why a factory needs it at all.** Factories are registered at import, so
+ * the registries they close over are the module singletons. That is the right
+ * game only when the load is into `defaultGame`. Loaded into any other `Game` —
+ * `core-save-game`'s `gameForLoad`, which has fresh runtime registries — a
+ * delayed action's factory looked for the unit's `PendingEffect` in the
+ * singleton registry, while `hydrate` had registered it in the loading game's.
+ * The singleton held only the *saved* game's effect, owed to the saved unit
+ * rather than the restored one, so a unit part-way through fortifying failed
+ * to load with `MissingPendingEffectError`, naming an effect the file did
+ * contain (civ-clone/web-renderer#245).
+ *
+ * Every field is optional: a factory falls back to what it was registered
+ * with, which is what a caller passing nothing has always had.
+ */
+export type BusyContext = {
+  pendingEffects?: PendingEffectRegistry;
+  rules?: RuleRegistry;
+  turn?: Turn;
+};
 
 /**
  * How to rebuild a `Busy` rule for a unit after a load.
@@ -9,8 +38,12 @@ import { typeNameOf } from '@civ-clone/core-data-object/DataObject';
  * is: `Fortified` is built with `new Criterion(() => false)` at the call site,
  * `Stowed` builds its own, and `GoTo`'s criterion closes over the unit and the
  * path it is following. `new Class()` cannot express any of that.
+ *
+ * `context` is the game being loaded into — see `BusyContext`. Optional, so a
+ * factory can still be called as `factory(unit)`; one that reads no registry
+ * can ignore it.
  */
-export type BusyFactory = (unit: Unit) => Busy;
+export type BusyFactory = (unit: Unit, context?: BusyContext) => Busy;
 
 export class UnknownBusyError extends Error {}
 
@@ -108,8 +141,11 @@ export class BusyRegistry {
    * saved as fortified and loads as idle is a wrong answer a player would have
    * to notice for themselves — it moves on its next turn, and nothing reports
    * why. Failing the load names the rule and the plugin that is missing.
+   *
+   * Pass the game the unit is being loaded into as `context`, or the rule is
+   * rebuilt against the registries its factory was registered with.
    */
-  rebuild(identity: string, unit: Unit): Busy {
+  rebuild(identity: string, unit: Unit, context: BusyContext = {}): Busy {
     const factory = this._factories.get(identity);
 
     if (!factory) {
@@ -121,7 +157,7 @@ export class BusyRegistry {
       );
     }
 
-    return factory(unit);
+    return factory(unit, context);
   }
 }
 
