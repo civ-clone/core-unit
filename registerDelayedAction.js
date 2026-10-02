@@ -36,13 +36,19 @@ exports.MissingPendingEffectError = MissingPendingEffectError;
  * visibility reapply.
  */
 const registerDelayedAction = ({ action, BusyRule, complete, handler }, pendingEffects = core_pending_effect_1.instance, busyRegistry = BusyRegistry_1.instance, ruleRegistry = RuleRegistry_1.instance, turn = Turn_1.instance) => {
-    pendingEffects.handler(handler, (pendingEffect, performed) => {
+    const apply = (pendingEffect, performed) => {
         var _a;
         const unit = pendingEffect.target();
         complete(unit, pendingEffect, (_a = performed) !== null && _a !== void 0 ? _a : action(unit));
-    });
-    busyRegistry.register(BusyRule, (unit) => {
-        const [pendingEffect] = pendingEffects
+    };
+    pendingEffects.handler(handler, apply);
+    busyRegistry.register(BusyRule, (unit, context) => {
+        // The loading game's registries where the loader supplies them. The ones
+        // this was registered with are the singletons, which belong to whichever
+        // game was booted at import: loaded into another `Game`, the effect is in
+        // that game's registry and nowhere else (civ-clone/web-renderer#245).
+        const { pendingEffects: loadingPendingEffects = pendingEffects, rules: loadingRules = ruleRegistry, turn: loadingTurn = turn, } = context !== null && context !== void 0 ? context : {};
+        const [pendingEffect] = loadingPendingEffects
             .getByTarget(unit)
             .filter((candidate) => candidate.handler() === handler);
         if (!pendingEffect) {
@@ -52,7 +58,15 @@ const registerDelayedAction = ({ action, BusyRule, complete, handler }, pendingE
             throw new MissingPendingEffectError(`${unit.id()} is busy with '${handler}' but carries no pending ` +
                 'effect for it, so there is nothing to say when it finishes.');
         }
-        return (0, delayedBusy_1.delayedBusy)(BusyRule, action(unit), pendingEffect, pendingEffects, ruleRegistry, turn);
+        // The rebuilt rule discharges through the loading registry, so that is
+        // where the handler has to be known, or the unit fails when its work comes
+        // due. A loading game's registry is fresh, and handlers are registered at
+        // import, so only into the singleton.
+        if (!loadingPendingEffects.handlers().includes(handler)) {
+            loadingPendingEffects.handler(handler, apply);
+        }
+        // Built when the work finishes, not now: see `delayedBusy`.
+        return (0, delayedBusy_1.delayedBusy)(BusyRule, () => action(unit), pendingEffect, loadingPendingEffects, loadingRules, loadingTurn);
     });
 };
 exports.registerDelayedAction = registerDelayedAction;

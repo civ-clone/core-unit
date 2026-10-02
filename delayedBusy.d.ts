@@ -18,10 +18,16 @@ import { Turn } from '@civ-clone/core-turn-based-game/Turn';
  * the completion turn from the effect's data, the completion behaviour from the
  * handler the effect names, and the action from the caller. That is what makes
  * it reconstructible at all.
+ *
+ * `action` may be a function that builds the action, called only when the work
+ * finishes. A load has no performed action to hand over and has to build one,
+ * and an `Action` is an entity: constructing it during the load takes the next
+ * id from a counter `hydrate` has just restored, so saving the loaded game
+ * again wrote a different file (civ-clone/web-renderer#245).
  */
 export declare const delayedBusy: (
   BusyRule: typeof Busy,
-  action: Action,
+  action: Action | (() => Action),
   pendingEffect: PendingEffect,
   pendingEffects: PendingEffectRegistry,
   ruleRegistry: RuleRegistry,

@@ -97,8 +97,11 @@ class BusyRegistry {
      * saved as fortified and loads as idle is a wrong answer a player would have
      * to notice for themselves — it moves on its next turn, and nothing reports
      * why. Failing the load names the rule and the plugin that is missing.
+     *
+     * Pass the game the unit is being loaded into as `context`, or the rule is
+     * rebuilt against the registries its factory was registered with.
      */
-    rebuild(identity, unit) {
+    rebuild(identity, unit, context = {}) {
         const factory = this._factories.get(identity);
         if (!factory) {
             throw new UnknownBusyError(`No way to rebuild the '${identity}' busy state. The package that ` +
@@ -106,7 +109,7 @@ class BusyRegistry {
                 'state cannot be restored. Known: ' +
                 (this.identities().join(', ') || '(none)'));
         }
-        return factory(unit);
+        return factory(unit, context);
     }
 }
 exports.BusyRegistry = BusyRegistry;

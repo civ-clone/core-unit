@@ -11,7 +11,11 @@ import {
   Turn,
   instance as turnInstance,
 } from '@civ-clone/core-turn-based-game/Turn';
-import { BusyRegistry, instance as busyRegistryInstance } from './BusyRegistry';
+import {
+  BusyContext,
+  BusyRegistry,
+  instance as busyRegistryInstance,
+} from './BusyRegistry';
 import { Action } from './Action';
 import Busy from './Rules/Busy';
 import Unit from './Unit';
@@ -90,21 +94,26 @@ export const registerDelayedAction = <A extends Action = Action>(
   ruleRegistry: RuleRegistry = ruleRegistryInstance,
   turn: Turn = turnInstance
 ): void => {
-  pendingEffects.handler(
-    handler,
-    (pendingEffect: PendingEffect, performed?: unknown): void => {
-      const unit = pendingEffect.target() as Unit;
+  const apply = (pendingEffect: PendingEffect, performed?: unknown): void => {
+    const unit = pendingEffect.target() as Unit;
 
-      complete(
-        unit,
-        pendingEffect,
-        (performed as A | undefined) ?? action(unit)
-      );
-    }
-  );
+    complete(unit, pendingEffect, (performed as A | undefined) ?? action(unit));
+  };
 
-  busyRegistry.register(BusyRule, (unit: Unit): Busy => {
-    const [pendingEffect] = pendingEffects
+  pendingEffects.handler(handler, apply);
+
+  busyRegistry.register(BusyRule, (unit: Unit, context?: BusyContext): Busy => {
+    // The loading game's registries where the loader supplies them. The ones
+    // this was registered with are the singletons, which belong to whichever
+    // game was booted at import: loaded into another `Game`, the effect is in
+    // that game's registry and nowhere else (civ-clone/web-renderer#245).
+    const {
+      pendingEffects: loadingPendingEffects = pendingEffects,
+      rules: loadingRules = ruleRegistry,
+      turn: loadingTurn = turn,
+    } = context ?? {};
+
+    const [pendingEffect] = loadingPendingEffects
       .getByTarget(unit)
       .filter(
         (candidate: PendingEffect): boolean => candidate.handler() === handler
@@ -120,13 +129,22 @@ export const registerDelayedAction = <A extends Action = Action>(
       );
     }
 
+    // The rebuilt rule discharges through the loading registry, so that is
+    // where the handler has to be known, or the unit fails when its work comes
+    // due. A loading game's registry is fresh, and handlers are registered at
+    // import, so only into the singleton.
+    if (!loadingPendingEffects.handlers().includes(handler)) {
+      loadingPendingEffects.handler(handler, apply);
+    }
+
+    // Built when the work finishes, not now: see `delayedBusy`.
     return delayedBusy(
       BusyRule,
-      action(unit),
+      (): A => action(unit),
       pendingEffect,
-      pendingEffects,
-      ruleRegistry,
-      turn
+      loadingPendingEffects,
+      loadingRules,
+      loadingTurn
     );
   });
 };
