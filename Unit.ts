@@ -16,6 +16,7 @@ import Busy from './Rules/Busy';
 import City from '@civ-clone/core-city/City';
 import Created from './Rules/Created';
 import Destroyed from './Rules/Destroyed';
+import Transferred from './Rules/Transferred';
 import Player from '@civ-clone/core-player/Player';
 import VisibilityRule from './Rules/Visibility';
 import Yield from '@civ-clone/core-yield/Yield';
@@ -51,6 +52,7 @@ export interface IUnit extends IDataObject {
   setStatus(status: Action | null): void;
   tile(): Tile;
   setTile(tile: Tile): void;
+  transfer(player: Player, city?: ICity | null): void;
   visibility(): Visibility;
   waiting(): boolean;
   setWaiting(waiting?: boolean): void;
@@ -185,6 +187,20 @@ export class Unit extends Buildable implements IUnit {
 
   city(): ICity {
     return this._city;
+  }
+
+  /**
+   * Hands the unit to `player`, homed in `city` or in none, as a bribed or defecting unit changes sides. It stays the
+   * same unit, so its id and anything that refers to it stay valid; what else changes with it (what it loses, when it
+   * can next move) is up to the `Transferred` rules.
+   */
+  transfer(player: Player, city: ICity | null = null): void {
+    const previousPlayer = this._player;
+
+    this._player = player;
+    this._city = city as ICity;
+
+    this._ruleRegistry.process(Transferred, this, player, previousPlayer);
   }
 
   setCity(city: City): void {

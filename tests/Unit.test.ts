@@ -7,6 +7,7 @@ import City from '@civ-clone/core-city/City';
 import Created from '../Rules/Created';
 import Criterion from '@civ-clone/core-rule/Criterion';
 import Destroyed from '../Rules/Destroyed';
+import Transferred from '../Rules/Transferred';
 import Effect from '@civ-clone/core-rule/Effect';
 import Generator from '@civ-clone/core-world-generator/Generator';
 import Player from '@civ-clone/core-player/Player';
@@ -179,6 +180,28 @@ describe('Unit', (): void => {
 
     expect(spy).to.called.once;
     expect(unit.destroyed()).to.true;
+  });
+
+  it('should change hands, and process `Transferred` `Rule`s, when transferred', (): void => {
+    const ruleRegistry = new RuleRegistry(),
+      spy = chai.spy(),
+      original = new Player(),
+      recipient = new Player(),
+      city = generateCity('', recipient),
+      unit = new Unit(null, original, generateTile(), ruleRegistry);
+
+    ruleRegistry.register(new Transferred(new Effect(spy)));
+
+    unit.transfer(recipient, city);
+
+    expect(unit.player()).to.equal(recipient);
+    expect(unit.city()).to.equal(city);
+    expect(spy).to.called.once.with(unit, recipient, original);
+
+    unit.transfer(original);
+
+    expect(unit.player()).to.equal(original);
+    expect(unit.city()).to.null;
   });
 
   it('should be possible to construct from the `Buildable` method', (): void => {

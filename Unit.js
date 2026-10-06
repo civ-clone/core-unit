@@ -8,6 +8,7 @@ const Action_1 = require("./Rules/Action");
 const Activate_1 = require("./Rules/Activate");
 const Created_1 = require("./Rules/Created");
 const Destroyed_1 = require("./Rules/Destroyed");
+const Transferred_1 = require("./Rules/Transferred");
 const Visibility_1 = require("./Rules/Visibility");
 const Yield_1 = require("./Rules/Yield");
 class Unit extends Buildable_1.Buildable {
@@ -72,6 +73,17 @@ class Unit extends Buildable_1.Buildable {
     }
     city() {
         return this._city;
+    }
+    /**
+     * Hands the unit to `player`, homed in `city` or in none, as a bribed or defecting unit changes sides. It stays the
+     * same unit, so its id and anything that refers to it stay valid; what else changes with it (what it loses, when it
+     * can next move) is up to the `Transferred` rules.
+     */
+    transfer(player, city = null) {
+        const previousPlayer = this._player;
+        this._player = player;
+        this._city = city;
+        this._ruleRegistry.process(Transferred_1.default, this, player, previousPlayer);
     }
     setCity(city) {
         if (this.player() !== city.player()) {

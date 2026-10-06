@@ -39,6 +39,7 @@ export interface IUnit extends IDataObject {
   setStatus(status: Action | null): void;
   tile(): Tile;
   setTile(tile: Tile): void;
+  transfer(player: Player, city?: ICity | null): void;
   visibility(): Visibility;
   waiting(): boolean;
   setWaiting(waiting?: boolean): void;
@@ -74,6 +75,12 @@ export declare class Unit extends Buildable implements IUnit {
   busy(): IBusy;
   setBusy(rule?: IBusy): void;
   city(): ICity;
+  /**
+   * Hands the unit to `player`, homed in `city` or in none, as a bribed or defecting unit changes sides. It stays the
+   * same unit, so its id and anything that refers to it stay valid; what else changes with it (what it loses, when it
+   * can next move) is up to the `Transferred` rules.
+   */
+  transfer(player: Player, city?: ICity | null): void;
   setCity(city: City): void;
   defence(): Defence;
   destroy(player?: Player | null): void;
