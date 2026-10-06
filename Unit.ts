@@ -198,7 +198,10 @@ export class Unit extends Buildable implements IUnit {
     const previousPlayer = this._player;
 
     this._player = player;
-    this._city = city as ICity;
+    // As `setCity` insists: a unit's home is one of its owner's cities, or none.
+    this._city = (
+      city !== null && city.player() === player ? city : null
+    ) as ICity;
 
     this._ruleRegistry.process(Transferred, this, player, previousPlayer);
   }
