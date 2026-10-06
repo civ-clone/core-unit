@@ -202,6 +202,12 @@ describe('Unit', (): void => {
 
     expect(unit.player()).to.equal(original);
     expect(unit.city()).to.null;
+
+    // A home that isn't the new owner's isn't kept.
+    unit.transfer(original, city);
+
+    expect(unit.player()).to.equal(original);
+    expect(unit.city()).to.null;
   });
 
   it('should be possible to construct from the `Buildable` method', (): void => {
