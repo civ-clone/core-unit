@@ -22,7 +22,7 @@ import VisibilityRule from './Rules/Visibility';
 import Yield from '@civ-clone/core-yield/Yield';
 import YieldRule from './Rules/Yield';
 import { IDataObject } from '@civ-clone/core-data-object/DataObject';
-import keysChanged from './lib/keysChanged';
+import keysChanged from '@civ-clone/core-registry/keysChanged';
 
 export type IActionsForNeighbours = {
   [key: string]: Action[];
