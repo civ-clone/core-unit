@@ -22,6 +22,7 @@ import VisibilityRule from './Rules/Visibility';
 import Yield from '@civ-clone/core-yield/Yield';
 import YieldRule from './Rules/Yield';
 import { IDataObject } from '@civ-clone/core-data-object/DataObject';
+import keysChanged from './lib/keysChanged';
 
 export type IActionsForNeighbours = {
   [key: string]: Action[];
@@ -203,6 +204,9 @@ export class Unit extends Buildable implements IUnit {
       city !== null && city.player() === player ? city : null
     ) as ICity;
 
+    // Before the rules, which may look the unit up by its new owner.
+    keysChanged(this);
+
     this._ruleRegistry.process(Transferred, this, player, previousPlayer);
   }
 
@@ -212,6 +216,8 @@ export class Unit extends Buildable implements IUnit {
     }
 
     this._city = city;
+
+    keysChanged(this);
   }
 
   defence(): Defence {
@@ -260,6 +266,8 @@ export class Unit extends Buildable implements IUnit {
 
   setTile(tile: Tile): void {
     this._tile = tile;
+
+    keysChanged(this);
   }
 
   visibility(): Visibility {
