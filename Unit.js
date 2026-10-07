@@ -11,7 +11,7 @@ const Destroyed_1 = require("./Rules/Destroyed");
 const Transferred_1 = require("./Rules/Transferred");
 const Visibility_1 = require("./Rules/Visibility");
 const Yield_1 = require("./Rules/Yield");
-const keysChanged_1 = require("./lib/keysChanged");
+const keysChanged_1 = require("@civ-clone/core-registry/keysChanged");
 class Unit extends Buildable_1.Buildable {
     constructor(city, player, tile, ruleRegistry = RuleRegistry_1.instance) {
         super();
