@@ -36,21 +36,7 @@ class Buckets<K> {
       return;
     }
 
-    const position = this._order.get(unit)!;
-    let low = 0,
-      high = bucket.length;
-
-    while (low < high) {
-      const middle = (low + high) >>> 1;
-
-      if (this._order.get(bucket[middle])! < position) {
-        low = middle + 1;
-      } else {
-        high = middle;
-      }
-    }
-
-    bucket.splice(low, 0, unit);
+    bucket.splice(this.position(bucket, unit), 0, unit);
   }
 
   get(key: K): Unit[] {
@@ -64,15 +50,35 @@ class Buckets<K> {
       return;
     }
 
-    const index = bucket.indexOf(unit);
+    const index = this.position(bucket, unit);
 
-    if (index > -1) {
+    if (bucket[index] === unit) {
       bucket.splice(index, 1);
     }
 
     if (bucket.length === 0) {
       this._buckets.delete(key);
     }
+  }
+
+  // Where `unit` is, or would go, in `bucket`, found by its registration order rather than by searching: a bucket can be
+  //  large (every unit with no home city is in one), and each unit's order is unique.
+  private position(bucket: Unit[], unit: Unit): number {
+    const order = this._order.get(unit)!;
+    let low = 0,
+      high = bucket.length;
+
+    while (low < high) {
+      const middle = (low + high) >>> 1;
+
+      if (this._order.get(bucket[middle])! < order) {
+        low = middle + 1;
+      } else {
+        high = middle;
+      }
+    }
+
+    return low;
   }
 }
 
@@ -122,13 +128,34 @@ export class UnitRegistry
     });
   }
 
+  // Only the buckets whose key has changed: a unit moving tile keeps its owner and home, and re-filing those too cost a
+  //  move work in proportion to how many units share them.
   keysChanged(unit: Unit): void {
-    if (!this._filed.has(unit)) {
+    const filed = this._filed.get(unit);
+
+    if (!filed) {
       return;
     }
 
-    this.unfile(unit);
-    this.file(unit);
+    const [city, player, tile] = filed,
+      keys: Keys = [unit.city(), unit.player(), unit.tile()];
+
+    if (keys[0] !== city) {
+      this._byCity.remove(city, unit);
+      this._byCity.add(keys[0], unit);
+    }
+
+    if (keys[1] !== player) {
+      this._byPlayer.remove(player, unit);
+      this._byPlayer.add(keys[1], unit);
+    }
+
+    if (keys[2] !== tile) {
+      this._byTile.remove(tile, unit);
+      this._byTile.add(keys[2], unit);
+    }
+
+    this._filed.set(unit, keys);
   }
 
   reindex(unit: Unit): void {

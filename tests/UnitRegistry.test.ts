@@ -151,6 +151,45 @@ describe('UnitRegistry', (): void => {
     expect(second.getByTile(from)).to.deep.equal([]);
   });
 
+  it('should not keep a registry alive through the units it held', async function (): Promise<void> {
+    // Only observable with `node --expose-gc`; skipped otherwise.
+    const gc: (() => void) | undefined = (globalThis as any).gc;
+
+    if (
+      typeof gc !== 'function' ||
+      typeof (globalThis as any).WeakRef !== 'function'
+    ) {
+      this.skip();
+    }
+
+    const player = new Player(ruleRegistry),
+      unit = new Unit(null, player, tile(), ruleRegistry),
+      kept = new UnitRegistry(),
+      dropped = ((): { deref(): UnitRegistry | undefined } => {
+        const registry = new UnitRegistry();
+
+        registry.register(unit);
+
+        return new (globalThis as any).WeakRef(registry);
+      })();
+
+    kept.register(unit);
+
+    // A weak reference is only cleared between jobs, so let one end either side of collecting.
+    await new Promise((resolve) => setImmediate(resolve));
+    gc!();
+    await new Promise((resolve) => setImmediate(resolve));
+
+    expect(dropped.deref()).to.equal(undefined);
+
+    // The unit still tells the registry that's left.
+    const to = tile();
+
+    unit.setTile(to);
+
+    expect(kept.getByTile(to)).to.deep.equal([unit]);
+  });
+
   it('should always answer as the scan it replaces did, over many random changes', (): void => {
     // A small seeded generator, so a failure can be replayed.
     let seed = 308;
