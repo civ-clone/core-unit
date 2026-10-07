@@ -11,6 +11,7 @@ const Destroyed_1 = require("./Rules/Destroyed");
 const Transferred_1 = require("./Rules/Transferred");
 const Visibility_1 = require("./Rules/Visibility");
 const Yield_1 = require("./Rules/Yield");
+const keysChanged_1 = require("./lib/keysChanged");
 class Unit extends Buildable_1.Buildable {
     constructor(city, player, tile, ruleRegistry = RuleRegistry_1.instance) {
         super();
@@ -84,6 +85,8 @@ class Unit extends Buildable_1.Buildable {
         this._player = player;
         // As `setCity` insists: a unit's home is one of its owner's cities, or none.
         this._city = (city !== null && city.player() === player ? city : null);
+        // Before the rules, which may look the unit up by its new owner.
+        (0, keysChanged_1.default)(this);
         this._ruleRegistry.process(Transferred_1.default, this, player, previousPlayer);
     }
     setCity(city) {
@@ -91,6 +94,7 @@ class Unit extends Buildable_1.Buildable {
             return;
         }
         this._city = city;
+        (0, keysChanged_1.default)(this);
     }
     defence() {
         const [unitYield] = this.yield(new Yields_1.Defence());
@@ -126,6 +130,7 @@ class Unit extends Buildable_1.Buildable {
     }
     setTile(tile) {
         this._tile = tile;
+        (0, keysChanged_1.default)(this);
     }
     visibility() {
         const [unitYield] = this.yield(new Yields_1.Visibility());
