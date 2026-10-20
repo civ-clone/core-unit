@@ -8,7 +8,9 @@ const Player_1 = require("@civ-clone/core-player/Player");
 const Tile_1 = require("@civ-clone/core-world/Tile");
 const getAdditionalData = (unitRegistry = UnitRegistry_1.instance) => [
     new AdditionalData_1.default(City_1.default, 'units', (city) => unitRegistry.getByCity(city)),
-    new AdditionalData_1.default(Player_1.default, 'units', (player) => unitRegistry.getByPlayer(player, true)),
+    // Only the units a player still has: a destroyed one goes out once, marked destroyed, and then drops out of the list
+    //  (civ-clone/web-renderer#459).
+    new AdditionalData_1.default(Player_1.default, 'units', (player) => unitRegistry.getByPlayer(player)),
     new AdditionalData_1.default(Tile_1.default, 'units', (tile) => unitRegistry.getByTile(tile)),
 ];
 exports.getAdditionalData = getAdditionalData;
