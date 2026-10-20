@@ -13,8 +13,10 @@ export const getAdditionalData = (
   new AdditionalData(City, 'units', (city: City) =>
     unitRegistry.getByCity(city)
   ),
+  // Only the units a player still has: a destroyed one goes out once, marked destroyed, and then drops out of the list
+  //  (civ-clone/web-renderer#459).
   new AdditionalData(Player, 'units', (player: Player) =>
-    unitRegistry.getByPlayer(player, true)
+    unitRegistry.getByPlayer(player)
   ),
   new AdditionalData(Tile, 'units', (tile: Tile) =>
     unitRegistry.getByTile(tile)
