@@ -7,6 +7,9 @@ import Tile from '@civ-clone/core-world/Tile';
 import Unit from '../Unit';
 import UnitAction from '../Action';
 
+/** Thrown by `unitAction` for an entry that is neither a `Unit` class nor a `UnitTrait` class. */
+export class UnitActionTypeError extends TypeError {}
+
 export class Action extends Rule<[Unit, Tile, Tile], UnitAction> {}
 
 export default Action;
@@ -40,14 +43,34 @@ export const unitAction = (
       (type): type is typeof Unit => !isTraitType(type)
     );
 
-  return [
-    new Action(
-      new Criterion(
-        (unit: Unit): boolean =>
+  classes.forEach((type: typeof Unit): void => {
+    // A class from a second copy of core-unit is neither, and would silently never match.
+    if (
+      typeof type !== 'function' ||
+      (type !== Unit && !(type.prototype instanceof Unit))
+    ) {
+      throw new UnitActionTypeError(
+        `unitAction(${ActionType.name}): ${String(
+          (type as { name?: string })?.name ?? type
+        )} is neither a Unit class nor a UnitTrait class (is a second copy of @civ-clone/core-unit installed?).`
+      );
+    }
+  });
+
+  const matches =
+    traits.length === 0
+      ? (unit: Unit): boolean =>
           classes.some(
             (UnitType: typeof Unit): boolean => unit instanceof UnitType
-          ) || traits.some((Trait: TraitType): boolean => unit.hasTrait(Trait))
-      ),
+          )
+      : (unit: Unit): boolean =>
+          classes.some(
+            (UnitType: typeof Unit): boolean => unit instanceof UnitType
+          ) || traits.some((Trait: TraitType): boolean => unit.hasTrait(Trait));
+
+  return [
+    new Action(
+      new Criterion(matches),
       ...additionalPriorities,
       new Effect(
         (unit: Unit, to: Tile, from: Tile): UnitAction =>

@@ -7,7 +7,12 @@ import type Unit from '../Unit';
 /**
  * The traits a unit type has. Validated and processed with the unit's class, never an instance, and read through
  *  `hasTrait`/`traitsOf` (or `unit.hasTrait()`), which keep the answer per class until a `UnitTraits` rule is
- *  registered, removed or switched. So a rule's criteria and effect must depend on the class alone.
+ *  registered, removed or switched. So a rule's criteria and effect must depend on the class alone: never on game
+ *  state (it isn't asked again when that changes), and never on traits (asking about the class being resolved throws
+ *  `UnitTraitCycleError`).
+ *
+ * Don't subclass it: a rule of a subclass would be returned by `get(UnitTraits)`, but registering or removing one
+ *  doesn't clear `RuleRegistry`'s cache for `UnitTraits`, so the traits wouldn't follow it.
  */
 export class UnitTraits extends Rule<[typeof Unit], UnitTrait[]> {}
 

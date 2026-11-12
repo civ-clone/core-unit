@@ -10,9 +10,9 @@ import { expect } from 'chai';
 import { hasTrait } from '../traits';
 import { unitTraits } from '../Rules/UnitTraits';
 
-// Not a pass/fail test: it logs what a trait lookup costs against the `instanceof` it replaces, so a change to the
-//  lookup can be compared. Shaped like Civ1: 28 unit classes under a few abstract ones, and about 30 declarations.
-describe('unit traits: cost of a lookup', (): void => {
+// `npm run bench`, not part of `npm test`. It logs what a trait lookup costs against the `instanceof` it replaces, so a
+//  change to the lookup can be compared; it asserts only that both give the same answers, never a timing. Shaped like Civ1: 28 unit classes under a few abstract ones, and about 30 declarations.
+describe('unit traits: lookup timings (logged, not asserted)', (): void => {
   class Land extends Unit {}
   class Fortifiable extends Land {}
   class Diplomatic extends Fortifiable {}
@@ -85,7 +85,7 @@ describe('unit traits: cost of a lookup', (): void => {
     return found;
   };
 
-  it('should cost about what `instanceof` does', (): void => {
+  it('should give the same answers as `instanceof`, and log how long each took', (): void => {
     const byClass = time(
         'instanceof Diplomatic',
         (unit) => unit instanceof Diplomatic

@@ -31,6 +31,13 @@ item, `hasTrait(Diplomat, NonCombatant, ruleRegistry)`. `traitsOf` returns the t
 `traitCriterion(Trait)` is a ready-made `Criterion`, and `unitAction` accepts trait classes alongside unit classes. The
 answers are kept per class and registry until a `UnitTraits` rule is registered, removed or switched.
 
+So a trait declaration must depend on the class alone: never on game state, which it isn't asked about again, and never
+on traits (a declaration that asks about the class being resolved throws `UnitTraitCycleError`). Don't subclass
+`UnitTraits`: registering a subclass's rule doesn't clear the registry's cache for `UnitTraits`. `traitsOf` lists every
+declaration, so a trait declared on both a parent and a leaf class appears twice for the leaf.
+
+`npm run bench` logs what a lookup costs against `instanceof`.
+
 Traits belong to the class, so they are never saved and never sent to a client. A unit's own state (veteran, fortified)
 stays a `UnitImprovement`.
 

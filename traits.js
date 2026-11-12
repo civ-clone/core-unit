@@ -1,8 +1,12 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.isA = exports.traitCriterion = exports.traitsOf = exports.hasTrait = void 0;
+exports.isA = exports.traitCriterion = exports.traitsOf = exports.hasTrait = exports.UnitTraitCycleError = void 0;
 const Criterion_1 = require("@civ-clone/core-rule/Criterion");
 const UnitTraits_1 = require("./Rules/UnitTraits");
+/** Thrown when a `UnitTraits` rule asks for the traits of the class it is being resolved for. */
+class UnitTraitCycleError extends Error {
+}
+exports.UnitTraitCycleError = UnitTraitCycleError;
 const none = Object.freeze([]);
 const memo = new WeakMap();
 const build = (UnitType, rules) => {
@@ -38,12 +42,22 @@ const resolve = (unit, ruleRegistry) => {
     const UnitType = (typeof unit === 'function' ? unit : unit.constructor), rules = ruleRegistry.get(UnitTraits_1.default);
     let revision = memo.get(ruleRegistry);
     if (revision === undefined || revision.rules !== rules) {
-        revision = { rules, byClass: new Map() };
+        revision = { rules, byClass: new Map(), resolving: new Set() };
         memo.set(ruleRegistry, revision);
     }
     let resolved = revision.byClass.get(UnitType);
     if (resolved === undefined) {
-        resolved = build(UnitType, rules);
+        if (revision.resolving.has(UnitType)) {
+            throw new UnitTraitCycleError(`A UnitTraits rule asked for the traits of ${UnitType.name} while they were being worked out. A trait ` +
+                "declaration's criteria and effect must depend on the class alone, not on its (or any) traits.");
+        }
+        revision.resolving.add(UnitType);
+        try {
+            resolved = build(UnitType, rules);
+        }
+        finally {
+            revision.resolving.delete(UnitType);
+        }
         revision.byClass.set(UnitType, resolved);
     }
     return resolved;
@@ -53,13 +67,17 @@ const resolve = (unit, ruleRegistry) => {
  *  `ruleRegistry`. The registry is required: a game's own `RuleRegistry` holds its declarations, and asking another
  *  would silently find none. A unit has `unit.hasTrait()`, which uses its own.
  *
- * The answer is kept per class and registry until a `UnitTraits` rule changes, so a lookup allocates nothing.
+ * The answer is kept per class and registry until a `UnitTraits` rule changes, so a lookup allocates nothing. That is
+ *  why a declaration must depend on the class alone and never on game state: it is resolved once per class, not per
+ *  query.
  */
 const hasTrait = (unit, Trait, ruleRegistry) => resolve(unit, ruleRegistry).has(Trait);
 exports.hasTrait = hasTrait;
 /**
- * The traits of a unit, or a unit class, that are a `Trait`: every `Carries` of a carrier, say. In declaration order,
- *  each once, frozen and shared: an empty result is always the same empty array.
+ * The traits of a unit, or a unit class, that are a `Trait`, with their parameters: every `Carries` of a carrier, say.
+ *  In declaration order, frozen and shared: an empty result is always the same empty array.
+ *
+ * Each declaration counts: a trait declared on both a parent class and a leaf class appears twice for the leaf.
  */
 const traitsOf = (unit, Trait, ruleRegistry) => { var _a; return ((_a = resolve(unit, ruleRegistry).get(Trait)) !== null && _a !== void 0 ? _a : none); };
 exports.traitsOf = traitsOf;

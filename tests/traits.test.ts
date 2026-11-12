@@ -1,6 +1,18 @@
-import { Action as ActionRule, unitAction } from '../Rules/Action';
+import {
+  Action as ActionRule,
+  UnitActionTypeError,
+  unitAction,
+} from '../Rules/Action';
 import { UnitTraits, unitTraits } from '../Rules/UnitTraits';
-import { hasTrait, isA, traitCriterion, traitsOf } from '../traits';
+import {
+  UnitTraitCycleError,
+  hasTrait,
+  isA,
+  traitCriterion,
+  traitsOf,
+} from '../traits';
+import Criterion from '@civ-clone/core-rule/Criterion';
+import Effect from '@civ-clone/core-rule/Effect';
 import RuleSet from '@civ-clone/core-rule/RuleSet';
 import RuleSetRegistry from '@civ-clone/core-rule/RuleSetRegistry';
 import Action from '../Action';
@@ -211,6 +223,54 @@ describe('unit traits', (): void => {
       expect(fortifies(spearman)).to.be.true;
       expect(fortifies(trireme)).to.be.true;
       expect(fortifies(fighter)).to.be.false;
+    });
+  });
+
+  describe('mistakes', (): void => {
+    it('should list a trait declared on a parent and a leaf twice for the leaf', (): void => {
+      const ruleRegistry = new RuleRegistry();
+
+      ruleRegistry.register(
+        ...unitTraits(prefix, Land, Fortifies),
+        ...unitTraits(prefix, Spearman, Fortifies)
+      );
+
+      expect(traitsOf(Spearman, Fortifies, ruleRegistry)).to.have.length(2);
+      expect(traitsOf(Land, Fortifies, ruleRegistry)).to.have.length(1);
+      expect(hasTrait(Spearman, Fortifies, ruleRegistry)).to.be.true;
+    });
+
+    it('should throw, not recurse, when a declaration asks for the traits of its own class', (): void => {
+      const ruleRegistry = new RuleRegistry();
+
+      ruleRegistry.register(
+        new UnitTraits(
+          new Criterion((UnitType: typeof Unit): boolean =>
+            hasTrait(UnitType, Covert, ruleRegistry)
+          ),
+          new Effect((): UnitTrait[] => [new Fortifies()])
+        )
+      );
+
+      expect((): boolean =>
+        hasTrait(Diplomat, Fortifies, ruleRegistry)
+      ).to.throw(UnitTraitCycleError);
+      // Nothing is left half-resolved: asking again throws again, rather than answering from a partial result.
+      expect((): boolean =>
+        hasTrait(Diplomat, Fortifies, ruleRegistry)
+      ).to.throw(UnitTraitCycleError);
+    });
+
+    it('should refuse an action entry that is neither a unit class nor a trait class', (): void => {
+      class Fortify extends Action {}
+      class NotAUnit {}
+
+      expect((): ActionRule[] =>
+        unitAction(Fortify, [Spearman, NotAUnit as unknown as typeof Unit])
+      ).to.throw(UnitActionTypeError, /NotAUnit/);
+      expect((): ActionRule[] =>
+        unitAction(Fortify, [Unit, Fortifies])
+      ).to.not.throw();
     });
   });
 

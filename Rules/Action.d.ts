@@ -5,6 +5,8 @@ import { TraitType } from '../UnitTrait';
 import Tile from '@civ-clone/core-world/Tile';
 import Unit from '../Unit';
 import UnitAction from '../Action';
+/** Thrown by `unitAction` for an entry that is neither a `Unit` class nor a `UnitTrait` class. */
+export declare class UnitActionTypeError extends TypeError {}
 export declare class Action extends Rule<[Unit, Tile, Tile], UnitAction> {}
 export default Action;
 export declare const hasMovesLeft: Criterion<[unit: Unit]>;

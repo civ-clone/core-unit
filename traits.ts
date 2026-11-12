@@ -12,7 +12,12 @@ type Revision = {
   //  `UnitTraits` rule is registered, unregistered or switched, so the array is the revision.
   rules: readonly UnitTraits[];
   byClass: Map<Function, Resolved>;
+  // The classes whose traits are being worked out right now, to catch a declaration that asks about its own class.
+  resolving: Set<Function>;
 };
+
+/** Thrown when a `UnitTraits` rule asks for the traits of the class it is being resolved for. */
+export class UnitTraitCycleError extends Error {}
 
 const none: readonly UnitTrait[] = Object.freeze([]);
 
@@ -73,7 +78,7 @@ const resolve = (
   let revision = memo.get(ruleRegistry);
 
   if (revision === undefined || revision.rules !== rules) {
-    revision = { rules, byClass: new Map() };
+    revision = { rules, byClass: new Map(), resolving: new Set() };
 
     memo.set(ruleRegistry, revision);
   }
@@ -81,7 +86,20 @@ const resolve = (
   let resolved = revision.byClass.get(UnitType);
 
   if (resolved === undefined) {
-    resolved = build(UnitType, rules);
+    if (revision.resolving.has(UnitType)) {
+      throw new UnitTraitCycleError(
+        `A UnitTraits rule asked for the traits of ${UnitType.name} while they were being worked out. A trait ` +
+          "declaration's criteria and effect must depend on the class alone, not on its (or any) traits."
+      );
+    }
+
+    revision.resolving.add(UnitType);
+
+    try {
+      resolved = build(UnitType, rules);
+    } finally {
+      revision.resolving.delete(UnitType);
+    }
 
     revision.byClass.set(UnitType, resolved);
   }
@@ -94,7 +112,9 @@ const resolve = (
  *  `ruleRegistry`. The registry is required: a game's own `RuleRegistry` holds its declarations, and asking another
  *  would silently find none. A unit has `unit.hasTrait()`, which uses its own.
  *
- * The answer is kept per class and registry until a `UnitTraits` rule changes, so a lookup allocates nothing.
+ * The answer is kept per class and registry until a `UnitTraits` rule changes, so a lookup allocates nothing. That is
+ *  why a declaration must depend on the class alone and never on game state: it is resolved once per class, not per
+ *  query.
  */
 export const hasTrait = (
   unit: Unit | typeof Unit,
@@ -103,8 +123,10 @@ export const hasTrait = (
 ): boolean => resolve(unit, ruleRegistry).has(Trait);
 
 /**
- * The traits of a unit, or a unit class, that are a `Trait`: every `Carries` of a carrier, say. In declaration order,
- *  each once, frozen and shared: an empty result is always the same empty array.
+ * The traits of a unit, or a unit class, that are a `Trait`, with their parameters: every `Carries` of a carrier, say.
+ *  In declaration order, frozen and shared: an empty result is always the same empty array.
+ *
+ * Each declaration counts: a trait declared on both a parent class and a leaf class appears twice for the leaf.
  */
 export const traitsOf = <T extends UnitTrait = UnitTrait>(
   unit: Unit | typeof Unit,
