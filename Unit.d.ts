@@ -8,6 +8,7 @@ import { Tile, INeighbouringTiles } from '@civ-clone/core-world/Tile';
 import Action from './Action';
 import Busy from './Rules/Busy';
 import City from '@civ-clone/core-city/City';
+import { TraitType, UnitTrait } from './UnitTrait';
 import Player from '@civ-clone/core-player/Player';
 import Yield from '@civ-clone/core-yield/Yield';
 import { IDataObject } from '@civ-clone/core-data-object/DataObject';
@@ -32,6 +33,7 @@ export interface IUnit extends IDataObject {
   destroy(player?: Player | null): void;
   destroyed(): boolean;
   setDestroyed(): void;
+  hasTrait(Trait: TraitType): boolean;
   movement(): Movement;
   moves(): Moves;
   player(): Player;
@@ -39,6 +41,7 @@ export interface IUnit extends IDataObject {
   setStatus(status: Action | null): void;
   tile(): Tile;
   setTile(tile: Tile): void;
+  traits<T extends UnitTrait = UnitTrait>(Trait?: TraitType<T>): readonly T[];
   transfer(player: Player, city?: ICity | null): void;
   visibility(): Visibility;
   waiting(): boolean;
@@ -90,6 +93,10 @@ export declare class Unit extends Buildable implements IUnit {
   destroy(player?: Player | null): void;
   destroyed(): boolean;
   setDestroyed(): void;
+  /**
+   * Whether this unit's type has `Trait`, as its game's `UnitTraits` rules declare. See `hasTrait`.
+   */
+  hasTrait(Trait: TraitType): boolean;
   movement(): Movement;
   moves(): Moves;
   player(): Player;
@@ -97,6 +104,10 @@ export declare class Unit extends Buildable implements IUnit {
   setStatus(status: Action | null): void;
   tile(): Tile;
   setTile(tile: Tile): void;
+  /**
+   * This unit's type's traits that are a `Trait` (every `Carries`, say), or all of them. See `traitsOf`.
+   */
+  traits<T extends UnitTrait = UnitTrait>(Trait?: TraitType<T>): readonly T[];
   visibility(): Visibility;
   waiting(): boolean;
   setWaiting(waiting?: boolean): void;

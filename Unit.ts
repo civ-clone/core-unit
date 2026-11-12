@@ -17,6 +17,8 @@ import City from '@civ-clone/core-city/City';
 import Created from './Rules/Created';
 import Destroyed from './Rules/Destroyed';
 import Transferred from './Rules/Transferred';
+import { TraitType, UnitTrait } from './UnitTrait';
+import { hasTrait, traitsOf } from './traits';
 import Player from '@civ-clone/core-player/Player';
 import VisibilityRule from './Rules/Visibility';
 import Yield from '@civ-clone/core-yield/Yield';
@@ -46,6 +48,7 @@ export interface IUnit extends IDataObject {
   destroy(player?: Player | null): void;
   destroyed(): boolean;
   setDestroyed(): void;
+  hasTrait(Trait: TraitType): boolean;
   movement(): Movement;
   moves(): Moves;
   player(): Player;
@@ -53,6 +56,7 @@ export interface IUnit extends IDataObject {
   setStatus(status: Action | null): void;
   tile(): Tile;
   setTile(tile: Tile): void;
+  traits<T extends UnitTrait = UnitTrait>(Trait?: TraitType<T>): readonly T[];
   transfer(player: Player, city?: ICity | null): void;
   visibility(): Visibility;
   waiting(): boolean;
@@ -242,6 +246,13 @@ export class Unit extends Buildable implements IUnit {
     this._destroyed = true;
   }
 
+  /**
+   * Whether this unit's type has `Trait`, as its game's `UnitTraits` rules declare. See `hasTrait`.
+   */
+  hasTrait(Trait: TraitType): boolean {
+    return hasTrait(this, Trait, this._ruleRegistry);
+  }
+
   movement(): Movement {
     const [unitYield] = this.yield(new Movement());
 
@@ -272,6 +283,15 @@ export class Unit extends Buildable implements IUnit {
     this._tile = tile;
 
     keysChanged(this);
+  }
+
+  /**
+   * This unit's type's traits that are a `Trait` (every `Carries`, say), or all of them. See `traitsOf`.
+   */
+  traits<T extends UnitTrait = UnitTrait>(
+    Trait: TraitType<T> = UnitTrait as TraitType<T>
+  ): readonly T[] {
+    return traitsOf(this, Trait, this._ruleRegistry);
   }
 
   visibility(): Visibility {
