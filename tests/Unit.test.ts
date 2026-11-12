@@ -210,6 +210,31 @@ describe('Unit', (): void => {
     expect(unit.city()).to.null;
   });
 
+  it('should be possible to set the home `City`, or none', (): void => {
+    const player = new Player(),
+      home = generateCity('', player),
+      newHome = generateCity('', player),
+      theirs = generateCity(),
+      unit = new Unit(home, player, generateTile());
+
+    unit.setCity(newHome);
+
+    expect(unit.city()).to.equal(newHome);
+
+    // Another player's city isn't a home for it.
+    unit.setCity(theirs);
+
+    expect(unit.city()).to.equal(newHome);
+
+    unit.setCity(null);
+
+    expect(unit.city()).to.null;
+
+    unit.setCity(home);
+
+    expect(unit.city()).to.equal(home);
+  });
+
   it('should be possible to construct from the `Buildable` method', (): void => {
     const city = generateCity(),
       unit = Unit.build(city);

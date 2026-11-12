@@ -210,8 +210,12 @@ export class Unit extends Buildable implements IUnit {
     this._ruleRegistry.process(Transferred, this, player, previousPlayer);
   }
 
-  setCity(city: City): void {
-    if (this.player() !== city.player()) {
+  /**
+   * Homes the unit in `city`, one of its owner's cities, or in none with `null`, so that no city supports it. A city of
+   *  another player's is ignored.
+   */
+  setCity(city: ICity): void {
+    if (city !== null && this.player() !== city.player()) {
       return;
     }
 

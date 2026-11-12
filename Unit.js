@@ -89,8 +89,12 @@ class Unit extends Buildable_1.Buildable {
         (0, keysChanged_1.default)(this);
         this._ruleRegistry.process(Transferred_1.default, this, player, previousPlayer);
     }
+    /**
+     * Homes the unit in `city`, one of its owner's cities, or in none with `null`, so that no city supports it. A city of
+     *  another player's is ignored.
+     */
     setCity(city) {
-        if (this.player() !== city.player()) {
+        if (city !== null && this.player() !== city.player()) {
             return;
         }
         this._city = city;
