@@ -9,6 +9,8 @@ const Activate_1 = require("./Rules/Activate");
 const Created_1 = require("./Rules/Created");
 const Destroyed_1 = require("./Rules/Destroyed");
 const Transferred_1 = require("./Rules/Transferred");
+const UnitTrait_1 = require("./UnitTrait");
+const traits_1 = require("./traits");
 const Visibility_1 = require("./Rules/Visibility");
 const Yield_1 = require("./Rules/Yield");
 const keysChanged_1 = require("@civ-clone/core-registry/keysChanged");
@@ -113,6 +115,12 @@ class Unit extends Buildable_1.Buildable {
     setDestroyed() {
         this._destroyed = true;
     }
+    /**
+     * Whether this unit's type has `Trait`, as its game's `UnitTraits` rules declare. See `hasTrait`.
+     */
+    hasTrait(Trait) {
+        return (0, traits_1.hasTrait)(this, Trait, this._ruleRegistry);
+    }
     movement() {
         const [unitYield] = this.yield(new Yields_1.Movement());
         return unitYield;
@@ -135,6 +143,12 @@ class Unit extends Buildable_1.Buildable {
     setTile(tile) {
         this._tile = tile;
         (0, keysChanged_1.default)(this);
+    }
+    /**
+     * This unit's type's traits that are a `Trait` (every `Carries`, say), or all of them. See `traitsOf`.
+     */
+    traits(Trait = UnitTrait_1.UnitTrait) {
+        return (0, traits_1.traitsOf)(this, Trait, this._ruleRegistry);
     }
     visibility() {
         const [unitYield] = this.yield(new Yields_1.Visibility());
