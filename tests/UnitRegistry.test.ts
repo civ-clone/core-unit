@@ -57,6 +57,14 @@ describe('UnitRegistry', (): void => {
     expect(registry.getByCity(home)).to.deep.equal([]);
     expect(registry.getByCity(newHome)).to.deep.equal([unit]);
 
+    unit.setCity(null);
+
+    expect(registry.getByCity(newHome)).to.deep.equal([]);
+
+    unit.setCity(newHome);
+
+    expect(registry.getByCity(newHome)).to.deep.equal([unit]);
+
     unit.transfer(other, theirs);
 
     expect(registry.getByPlayer(player)).to.deep.equal([]);

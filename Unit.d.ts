@@ -81,7 +81,11 @@ export declare class Unit extends Buildable implements IUnit {
    * can next move) is up to the `Transferred` rules.
    */
   transfer(player: Player, city?: ICity | null): void;
-  setCity(city: City): void;
+  /**
+   * Homes the unit in `city`, one of its owner's cities, or in none with `null`, so that no city supports it. A city of
+   *  another player's is ignored.
+   */
+  setCity(city: ICity): void;
   defence(): Defence;
   destroy(player?: Player | null): void;
   destroyed(): boolean;
