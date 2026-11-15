@@ -70,7 +70,8 @@ None of these rules has to be registered: a game that registers none fights as b
 units that are either whole or destroyed.
 
 - `HitPoints` and `Firepower` are `Yield`s like `Attack`. `unit.hitPoints()` is `[remaining, maximum]`, and
-  `unit.damage()`/`unit.setDamage(n)` hold what the unit has taken. A unit only has a `_damage` property while it is
+  `unit.damage()`/`unit.setDamage(n)` hold what the unit has taken (`setDamage` refuses a non-finite `n` with a
+  `RangeError`). A unit only has a `_damage` property while it is
   damaged, so it isn't saved for an undamaged unit. It isn't one of the unit's keys either: send it to a client through
   `AdditionalData` if it should see it.
 - `CombatResolver` (`[attacker, defender, attack, defence, power, randomNumberGenerator]` → `CombatResult`) decides a
@@ -79,3 +80,8 @@ units that are either whole or destroyed.
 - `DefenderRank` (`[attacker, candidate, attack, defence]` → a score) chooses the defender in place of the highest
   defence.
 - `WorkRate` (`[unit]` → a rate) shortens a `DelayedAction` to `ceil(turns / rate)` turns.
+
+Each of the three uses the first answer that isn't `undefined`. A rule declines through its `Criterion`, not by
+returning `undefined`: every rule whose criteria match still runs, so only one should match (a second resolver would
+fight the battle again). A resolver must name the attacker and defender as winner and loser and leave the winner alive
+(damage below its `HitPoints`); `Attack` throws otherwise.

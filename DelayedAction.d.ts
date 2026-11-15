@@ -33,8 +33,9 @@ export declare class DelayedAction extends Action implements IDelayedAction {
    * be derived again after a load — see `registerDelayedAction`, which pairs
    * the handler with the factory that rebuilds it.
    *
-   * `turns` is the work at a rate of 1. A `WorkRate` rule that answers for
-   * the unit with a rate `r` above 0 makes it `ceil(turns / r)` turns: at 2,
+   * `turns` is the work at a rate of 1. The first `WorkRate` answer (that
+   * isn't `undefined`) for the unit, a rate `r` above 0, makes it
+   * `ceil(turns / r)` turns: at 2,
    * 5 turns' work takes 3, as a team that does twice the work a turn finishes
    * in the first turn its work reaches what is needed. With no answer, `turns`
    * is used as given.

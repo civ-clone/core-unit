@@ -110,9 +110,14 @@ class Unit extends Buildable_1.Buildable {
         return (_a = this._damage) !== null && _a !== void 0 ? _a : 0;
     }
     /**
-     * Sets the damage this unit has taken. At 0 (or less) the unit is undamaged again and keeps no record of it.
+     * Sets the damage this unit has taken. At 0 (or less) the unit is undamaged again and keeps no record of it. Damage
+     *  that isn't a finite number (`NaN`, `Infinity`) is a `RangeError`: a unit that can't survive its damage is
+     *  destroyed, not given more of it.
      */
     setDamage(damage) {
+        if (!Number.isFinite(damage)) {
+            throw new RangeError(`A unit's damage must be finite, not ${damage}.`);
+        }
         if (damage > 0) {
             this._damage = damage;
             return;

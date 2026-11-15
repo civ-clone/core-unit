@@ -28,14 +28,17 @@ class DelayedAction extends Action_1.Action {
      * be derived again after a load — see `registerDelayedAction`, which pairs
      * the handler with the factory that rebuilds it.
      *
-     * `turns` is the work at a rate of 1. A `WorkRate` rule that answers for
-     * the unit with a rate `r` above 0 makes it `ceil(turns / r)` turns: at 2,
+     * `turns` is the work at a rate of 1. The first `WorkRate` answer (that
+     * isn't `undefined`) for the unit, a rate `r` above 0, makes it
+     * `ceil(turns / r)` turns: at 2,
      * 5 turns' work takes 3, as a team that does twice the work a turn finishes
      * in the first turn its work reaches what is needed. With no answer, `turns`
      * is used as given.
      */
     perform(turns, handler, BusyRule = Busy_1.default) {
-        const [rate] = this.ruleRegistry().process(WorkRate_1.default, this.unit()), pendingEffect = new core_pending_effect_1.PendingEffect(handler, this.unit(), {
+        const rate = this.ruleRegistry()
+            .process(WorkRate_1.default, this.unit())
+            .find((answer) => answer !== undefined), pendingEffect = new core_pending_effect_1.PendingEffect(handler, this.unit(), {
             endTurn: String(this._turn.value() +
                 (rate !== undefined && rate > 0 && Number.isFinite(rate)
                     ? Math.ceil(turns / rate)

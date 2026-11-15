@@ -55,6 +55,17 @@ describe('Unit damage', (): void => {
     expect(unit.stateKeys()).to.deep.equal(keys);
   });
 
+  it('should refuse damage that is not finite, and keep what it had', (): void => {
+    const unit = generateUnit();
+
+    unit.setDamage(4);
+
+    [NaN, Infinity, -Infinity].forEach((damage: number): void => {
+      expect((): void => unit.setDamage(damage)).to.throw(RangeError);
+      expect(unit.damage()).to.equal(4);
+    });
+  });
+
   it('should read 0 for a unit restored without running its constructor', (): void => {
     const unit = Object.create(Unit.prototype) as Unit;
 
@@ -167,6 +178,24 @@ describe('WorkRate', (): void => {
       // The rule doesn't answer for other units.
       expect(endTurn(ruleRegistry, turns)).to.equal(String(10 + turns));
     });
+  });
+
+  it('should take the first rate that is not undefined', (): void => {
+    const declining = new RuleRegistry(),
+      both = new RuleRegistry();
+
+    // A rule that matches but answers nothing, then one that answers.
+    declining.register(
+      new WorkRate(new Effect((): number => undefined as unknown as number)),
+      new WorkRate(new Effect((): number => 2))
+    );
+    both.register(
+      new WorkRate(new Effect((): number => 4)),
+      new WorkRate(new Effect((): number => 2))
+    );
+
+    expect(endTurn(declining, 5)).to.equal('13');
+    expect(endTurn(both, 5)).to.equal('12');
   });
 
   it('should ignore a rate that is not above 0', (): void => {
