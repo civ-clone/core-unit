@@ -1,4 +1,11 @@
-import { Attack, Defence, Movement, Moves, Visibility } from './Yields';
+import {
+  Attack,
+  Defence,
+  Firepower,
+  Movement,
+  Moves,
+  Visibility,
+} from './Yields';
 import {
   Buildable,
   BuildableInstance,
@@ -29,11 +36,15 @@ export interface IUnit extends IDataObject {
   busy(): IBusy;
   setBusy(rule?: IBusy): void;
   city(): ICity;
+  damage(): number;
+  setDamage(damage: number): void;
   defence(): Defence;
   destroy(player?: Player | null): void;
   destroyed(): boolean;
   setDestroyed(): void;
+  firepower(): Firepower;
   hasTrait(Trait: TraitType): boolean;
+  hitPoints(): [number, number];
   movement(): Movement;
   moves(): Moves;
   player(): Player;
@@ -53,6 +64,12 @@ export declare class Unit extends Buildable implements IUnit {
   private _active;
   private _busy;
   private _city;
+  /**
+   * Only ever assigned, never initialised: a unit that has taken no damage has no such property at all, so it is not
+   *  saved and adds nothing to a game whose units never take any. `declare` keeps it out of the compiled class
+   *  whatever the field semantics. Read through `damage()`, which also covers a unit loaded from an older save.
+   */
+  private _damage?;
   private _destroyed;
   private _moves;
   private _player;
@@ -89,14 +106,30 @@ export declare class Unit extends Buildable implements IUnit {
    *  another player's is ignored.
    */
   setCity(city: ICity): void;
+  /**
+   * The damage this unit has taken, in `HitPoints`: 0 until a `CombatResolver` deals it some.
+   */
+  damage(): number;
+  /**
+   * Sets the damage this unit has taken. At 0 (or less) the unit is undamaged again and keeps no record of it. Damage
+   *  that isn't a finite number (`NaN`, `Infinity`) is a `RangeError`: a unit that can't survive its damage is
+   *  destroyed, not given more of it.
+   */
+  setDamage(damage: number): void;
   defence(): Defence;
   destroy(player?: Player | null): void;
   destroyed(): boolean;
   setDestroyed(): void;
+  firepower(): Firepower;
   /**
    * Whether this unit's type has `Trait`, as its game's `UnitTraits` rules declare. See `hasTrait`.
    */
   hasTrait(Trait: TraitType): boolean;
+  /**
+   * The hit points this unit has left and its maximum (its `HitPoints` yield), as `[remaining, maximum]`. Remaining is
+   *  never below 0.
+   */
+  hitPoints(): [number, number];
   movement(): Movement;
   moves(): Moves;
   player(): Player;

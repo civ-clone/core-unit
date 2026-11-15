@@ -102,6 +102,28 @@ class Unit extends Buildable_1.Buildable {
         this._city = city;
         (0, keysChanged_1.default)(this);
     }
+    /**
+     * The damage this unit has taken, in `HitPoints`: 0 until a `CombatResolver` deals it some.
+     */
+    damage() {
+        var _a;
+        return (_a = this._damage) !== null && _a !== void 0 ? _a : 0;
+    }
+    /**
+     * Sets the damage this unit has taken. At 0 (or less) the unit is undamaged again and keeps no record of it. Damage
+     *  that isn't a finite number (`NaN`, `Infinity`) is a `RangeError`: a unit that can't survive its damage is
+     *  destroyed, not given more of it.
+     */
+    setDamage(damage) {
+        if (!Number.isFinite(damage)) {
+            throw new RangeError(`A unit's damage must be finite, not ${damage}.`);
+        }
+        if (damage > 0) {
+            this._damage = damage;
+            return;
+        }
+        delete this._damage;
+    }
     defence() {
         const [unitYield] = this.yield(new Yields_1.Defence());
         return unitYield;
@@ -115,11 +137,23 @@ class Unit extends Buildable_1.Buildable {
     setDestroyed() {
         this._destroyed = true;
     }
+    firepower() {
+        const [unitYield] = this.yield(new Yields_1.Firepower());
+        return unitYield;
+    }
     /**
      * Whether this unit's type has `Trait`, as its game's `UnitTraits` rules declare. See `hasTrait`.
      */
     hasTrait(Trait) {
         return (0, traits_1.hasTrait)(this, Trait, this._ruleRegistry);
+    }
+    /**
+     * The hit points this unit has left and its maximum (its `HitPoints` yield), as `[remaining, maximum]`. Remaining is
+     *  never below 0.
+     */
+    hitPoints() {
+        const [maximum] = this.yield(new Yields_1.HitPoints());
+        return [Math.max(0, maximum.value() - this.damage()), maximum.value()];
     }
     movement() {
         const [unitYield] = this.yield(new Yields_1.Movement());

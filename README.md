@@ -50,12 +50,38 @@ Includes the following `Rule`s:
 - `Activate` triggers actions when a `Unit` is `Unit.activate`d.
 - `Busy` for tracking if `DelayedAction`s are complete.
 - `CannotSupportUnit` triggered when a `City` cannot support a `Unit` for whatever reason.
+- `CombatResolver` fights a battle (see "Combat" below).
 - `Created` when `Unit`s are created.
-- `Defeated`    "        "   defeated.
+- `Damaged` when a `Unit` survives a battle with damage.
+- `Defeated`    "        "   defeated (and destroyed).
+- `DefenderRank` scores the units on an attacked square to choose its defender.
 - `Destroyed`   "        "   destroyed.
 - `Moved`       "        "   moved.
 - `MovementCost` which controls the cost of moving the `Unit`.
 - `UnitTraits` declares which `UnitTrait`s a unit class has (see above).
 - `ValidateMove` to confirm if the `Action` was successful or not.
 - `Visibility` for applying the results of the `Unit`s `Visibility` `Yield` to the `PlayerWorld`.
-- `Yield` controls the various `Yield`s applicable for the `Unit` (`Attack`, `Defence`, `Movement`, `Visibility`).
+- `WorkRate` for how fast a `Unit` gets through a `DelayedAction` (2 halves the turns, rounded up).
+- `Yield` controls the various `Yield`s applicable for the `Unit` (`Attack`, `Defence`, `Firepower`, `HitPoints`,
+  `Movement`, `Visibility`).
+## Combat
+
+None of these rules has to be registered: a game that registers none fights as before, with a single roll and
+units that are either whole or destroyed.
+
+- `HitPoints` and `Firepower` are `Yield`s like `Attack`. `unit.hitPoints()` is `[remaining, maximum]`, and
+  `unit.damage()`/`unit.setDamage(n)` hold what the unit has taken (`setDamage` refuses a non-finite `n` with a
+  `RangeError`). A unit only has a `_damage` property while it is
+  damaged, so it isn't saved for an undamaged unit. It isn't one of the unit's keys either: send it to a client through
+  `AdditionalData` if it should see it.
+- `CombatResolver` (`[attacker, defender, attack, defence, power, randomNumberGenerator]` → `CombatResult`) decides a
+  battle in place of the single roll. The attack applies the winner's damage, processes `Defeated` for the loser and
+  `Damaged` for a winner that took damage.
+- `DefenderRank` (`[attacker, candidate, attack, defence]` → a score) chooses the defender in place of the highest
+  defence.
+- `WorkRate` (`[unit]` → a rate) shortens a `DelayedAction` to `ceil(turns / rate)` turns.
+
+Each of the three uses the first answer that isn't `undefined`. A rule declines through its `Criterion`, not by
+returning `undefined`: every rule whose criteria match still runs, so only one should match (a second resolver would
+fight the battle again). A resolver must name the attacker and defender as winner and loser and leave the winner alive
+(damage below its `HitPoints`); `Attack` throws otherwise.
