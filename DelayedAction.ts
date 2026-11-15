@@ -15,6 +15,7 @@ import {
 import Busy from './Rules/Busy';
 import Tile from '@civ-clone/core-world/Tile';
 import Unit from './Unit';
+import WorkRate from './Rules/WorkRate';
 import { delayedBusy } from './delayedBusy';
 
 export interface IDelayedAction extends IAction {
@@ -52,11 +53,23 @@ export class DelayedAction extends Action implements IDelayedAction {
    * The `Busy` rule is derived from that rather than from a closure, so it can
    * be derived again after a load — see `registerDelayedAction`, which pairs
    * the handler with the factory that rebuilds it.
+   *
+   * `turns` is the work at a rate of 1. A `WorkRate` rule that answers for
+   * the unit with a rate `r` above 0 makes it `ceil(turns / r)` turns: at 2,
+   * 5 turns' work takes 3, as a team that does twice the work a turn finishes
+   * in the first turn its work reaches what is needed. With no answer, `turns`
+   * is used as given.
    */
   perform(turns: number, handler: string, BusyRule: typeof Busy = Busy): void {
-    const pendingEffect = new PendingEffect(handler, this.unit(), {
-      endTurn: String(this._turn.value() + turns),
-    });
+    const [rate] = this.ruleRegistry().process(WorkRate, this.unit()),
+      pendingEffect = new PendingEffect(handler, this.unit(), {
+        endTurn: String(
+          this._turn.value() +
+            (rate !== undefined && rate > 0 && Number.isFinite(rate)
+              ? Math.ceil(turns / rate)
+              : turns)
+        ),
+      });
 
     this._pendingEffects.register(pendingEffect);
 

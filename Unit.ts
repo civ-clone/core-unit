@@ -1,4 +1,12 @@
-import { Attack, Defence, Movement, Moves, Visibility } from './Yields';
+import {
+  Attack,
+  Defence,
+  Firepower,
+  HitPoints,
+  Movement,
+  Moves,
+  Visibility,
+} from './Yields';
 import {
   Buildable,
   BuildableInstance,
@@ -44,11 +52,15 @@ export interface IUnit extends IDataObject {
   busy(): IBusy;
   setBusy(rule?: IBusy): void;
   city(): ICity;
+  damage(): number;
+  setDamage(damage: number): void;
   defence(): Defence;
   destroy(player?: Player | null): void;
   destroyed(): boolean;
   setDestroyed(): void;
+  firepower(): Firepower;
   hasTrait(Trait: TraitType): boolean;
+  hitPoints(): [number, number];
   movement(): Movement;
   moves(): Moves;
   player(): Player;
@@ -69,6 +81,12 @@ export class Unit extends Buildable implements IUnit {
   private _active: boolean = true;
   private _busy: IBusy = null;
   private _city: ICity;
+  /**
+   * Only ever assigned, never initialised: a unit that has taken no damage has no such property at all, so it is not
+   *  saved and adds nothing to a game whose units never take any. `declare` keeps it out of the compiled class
+   *  whatever the field semantics. Read through `damage()`, which also covers a unit loaded from an older save.
+   */
+  private declare _damage?: number;
   private _destroyed: boolean = false;
   private _moves: Moves = new Moves();
   private _player: Player;
@@ -228,6 +246,26 @@ export class Unit extends Buildable implements IUnit {
     keysChanged(this);
   }
 
+  /**
+   * The damage this unit has taken, in `HitPoints`: 0 until a `CombatResolver` deals it some.
+   */
+  damage(): number {
+    return this._damage ?? 0;
+  }
+
+  /**
+   * Sets the damage this unit has taken. At 0 (or less) the unit is undamaged again and keeps no record of it.
+   */
+  setDamage(damage: number): void {
+    if (damage > 0) {
+      this._damage = damage;
+
+      return;
+    }
+
+    delete this._damage;
+  }
+
   defence(): Defence {
     const [unitYield] = this.yield(new Defence());
 
@@ -246,11 +284,27 @@ export class Unit extends Buildable implements IUnit {
     this._destroyed = true;
   }
 
+  firepower(): Firepower {
+    const [unitYield] = this.yield(new Firepower());
+
+    return unitYield;
+  }
+
   /**
    * Whether this unit's type has `Trait`, as its game's `UnitTraits` rules declare. See `hasTrait`.
    */
   hasTrait(Trait: TraitType): boolean {
     return hasTrait(this, Trait, this._ruleRegistry);
+  }
+
+  /**
+   * The hit points this unit has left and its maximum (its `HitPoints` yield), as `[remaining, maximum]`. Remaining is
+   *  never below 0.
+   */
+  hitPoints(): [number, number] {
+    const [maximum] = this.yield(new HitPoints());
+
+    return [Math.max(0, maximum.value() - this.damage()), maximum.value()];
   }
 
   movement(): Movement {
