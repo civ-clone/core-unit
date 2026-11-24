@@ -6,7 +6,7 @@ import {
   PendingEffect,
   PendingEffectRegistry,
 } from '@civ-clone/core-pending-effect';
-import BusyRegistry, { BusyFactory } from '../BusyRegistry';
+import BusyRegistry, { BusyContext, BusyFactory } from '../BusyRegistry';
 import Busy from '../Rules/Busy';
 import DelayedAction from '../DelayedAction';
 import Generator from '@civ-clone/core-world-generator/Generator';
@@ -34,6 +34,7 @@ const setUp = () => {
     loadingTurn = new Turn(),
     completed: Unit[] = [],
     built: Unit[] = [],
+    contexts: BusyContext[] = [],
     unit = new Unit(
       null,
       new Player(),
@@ -45,8 +46,9 @@ const setUp = () => {
     {
       BusyRule: Working,
       handler: HANDLER,
-      action: (unit: Unit) => {
+      action: (unit: Unit, context: BusyContext) => {
         built.push(unit);
+        contexts.push(context);
 
         return new DelayedAction(unit.tile(), unit.tile(), unit);
       },
@@ -67,6 +69,7 @@ const setUp = () => {
   return {
     built,
     busyRegistry,
+    contexts,
     completed,
     importedEffects,
     loadingEffects,
@@ -126,6 +129,39 @@ describe('registerDelayedAction', (): void => {
     busy.process();
 
     expect(built).to.deep.equal([unit]);
+  });
+
+  it('should build the action for the game it is being loaded into', (): void => {
+    // So a completion writes to that game's registries, not the ones at import
+    // (civ-clone/web-renderer#248).
+    const { busyRegistry, contexts, loadingEffects, loadingTurn, unit } =
+        setUp(),
+      context = { pendingEffects: loadingEffects, turn: loadingTurn };
+
+    const busy = busyRegistry.rebuild('Working', unit, context);
+
+    loadingTurn.increment();
+    busy.process();
+
+    expect(contexts).to.have.length(1);
+    expect(contexts[0]).to.equal(context);
+  });
+
+  it('should build the action for the loading game when its registry finishes the work', (): void => {
+    // The loading game's `pendingEffects` learns the handler on rebuild, and may
+    // discharge the effect itself, with no performed action to hand over.
+    const { busyRegistry, completed, contexts, loadingEffects, unit } = setUp(),
+      context = { pendingEffects: loadingEffects };
+
+    busyRegistry.rebuild('Working', unit, context);
+
+    const [pendingEffect] = loadingEffects.getByTarget(unit);
+
+    loadingEffects.discharge(pendingEffect);
+
+    expect(completed).to.deep.equal([unit]);
+    expect(contexts).to.have.length(1);
+    expect(contexts[0]).to.equal(context);
   });
 
   it('should still use the registries it was registered with when given none', (): void => {

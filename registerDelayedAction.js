@@ -36,12 +36,14 @@ exports.MissingPendingEffectError = MissingPendingEffectError;
  * visibility reapply.
  */
 const registerDelayedAction = ({ action, BusyRule, complete, handler }, pendingEffects = core_pending_effect_1.instance, busyRegistry = BusyRegistry_1.instance, ruleRegistry = RuleRegistry_1.instance, turn = Turn_1.instance) => {
-    const apply = (pendingEffect, performed) => {
+    // What finishing does, for the game `context` describes: without a performed
+    //  action (a load), the action is rebuilt there.
+    const applyIn = (context) => (pendingEffect, performed) => {
         var _a;
         const unit = pendingEffect.target();
-        complete(unit, pendingEffect, (_a = performed) !== null && _a !== void 0 ? _a : action(unit));
+        complete(unit, pendingEffect, (_a = performed) !== null && _a !== void 0 ? _a : action(unit, context));
     };
-    pendingEffects.handler(handler, apply);
+    pendingEffects.handler(handler, applyIn({}));
     busyRegistry.register(BusyRule, (unit, context) => {
         // The loading game's registries where the loader supplies them. The ones
         // this was registered with are the singletons, which belong to whichever
@@ -62,11 +64,16 @@ const registerDelayedAction = ({ action, BusyRule, complete, handler }, pendingE
         // where the handler has to be known, or the unit fails when its work comes
         // due. A loading game's registry is fresh, and handlers are registered at
         // import, so only into the singleton.
+        //
+        // A registry keeps the first handler it learns, with that context: the
+        // singleton's is the import-time one, with `{}`. That only matters if the
+        // effect is discharged without a performed action, and the rebuilt rule
+        // below always passes one, built for this context.
         if (!loadingPendingEffects.handlers().includes(handler)) {
-            loadingPendingEffects.handler(handler, apply);
+            loadingPendingEffects.handler(handler, applyIn(context !== null && context !== void 0 ? context : {}));
         }
         // Built when the work finishes, not now: see `delayedBusy`.
-        return (0, delayedBusy_1.delayedBusy)(BusyRule, () => action(unit), pendingEffect, loadingPendingEffects, loadingRules, loadingTurn);
+        return (0, delayedBusy_1.delayedBusy)(BusyRule, () => action(unit, context !== null && context !== void 0 ? context : {}), pendingEffect, loadingPendingEffects, loadingRules, loadingTurn);
     });
 };
 exports.registerDelayedAction = registerDelayedAction;

@@ -3,6 +3,7 @@ import { PendingEffectRegistry } from '@civ-clone/core-pending-effect';
 import { RuleRegistry } from '@civ-clone/core-rule/RuleRegistry';
 import { Turn } from '@civ-clone/core-turn-based-game/Turn';
 import Unit from './Unit';
+import UnitRegistry from './UnitRegistry';
 /**
  * The game a unit is being rebuilt into, as far as a factory needs to know it.
  *
@@ -22,11 +23,17 @@ import Unit from './Unit';
  *
  * Every field is optional: a factory falls back to what it was registered
  * with, which is what a caller passing nothing has always had.
+ *
+ * Only the slots this package can name are typed here. A factory that needs
+ * another of the game's registries — `tileImprovements`, `unitImprovements`,
+ * `strategyNotes` — reads it by the same `Game` slot name through a narrow cast,
+ * as the loader hands over the whole `Game` (civ-clone/web-renderer#248).
  */
 export type BusyContext = {
   pendingEffects?: PendingEffectRegistry;
   rules?: RuleRegistry;
   turn?: Turn;
+  units?: UnitRegistry;
 };
 /**
  * How to rebuild a `Busy` rule for a unit after a load.
