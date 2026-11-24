@@ -33,8 +33,13 @@ export type DelayedActionDefinition<A extends Action = Action> = {
    * where `BuildIrrigation` takes a `Turn`. `civ1-unit` already handles that by
    * constructing each group separately; a single `new ActionType(...)` here
    * would pass a `Turn` where a registry was expected for four of the eight.
+   *
+   * `context` is the game the unit is being loaded into (`BusyContext`, named
+   * after `Game`'s slots), or `{}` when there is none: build the action with
+   * its registries, falling back to the constructor's defaults, so a completion
+   * after a load writes where that game looks (civ-clone/web-renderer#248).
    */
-  action: (unit: Unit) => A;
+  action: (unit: Unit, context: BusyContext) => A;
   /** `package:name`, recorded in the save in place of the closure. */
   handler: string;
   /**
@@ -50,8 +55,7 @@ export type DelayedActionDefinition<A extends Action = Action> = {
    * did — `Fortified` landed in a registry the test was not looking at.
    *
    * After a load there is no performed action, so it is rebuilt with the
-   * `action` factory above — defaults, which is all a load can do until
-   * plugins register against a game rather than at import.
+   * `action` factory above, from the loading game's registries.
    *
    * Third rather than first so that packages written against the two-argument
    * form keep working: they ignore it.
@@ -94,13 +98,21 @@ export const registerDelayedAction = <A extends Action = Action>(
   ruleRegistry: RuleRegistry = ruleRegistryInstance,
   turn: Turn = turnInstance
 ): void => {
-  const apply = (pendingEffect: PendingEffect, performed?: unknown): void => {
-    const unit = pendingEffect.target() as Unit;
+  // What finishing does, for the game `context` describes: without a performed
+  //  action (a load), the action is rebuilt there.
+  const applyIn =
+    (context: BusyContext) =>
+    (pendingEffect: PendingEffect, performed?: unknown): void => {
+      const unit = pendingEffect.target() as Unit;
 
-    complete(unit, pendingEffect, (performed as A | undefined) ?? action(unit));
-  };
+      complete(
+        unit,
+        pendingEffect,
+        (performed as A | undefined) ?? action(unit, context)
+      );
+    };
 
-  pendingEffects.handler(handler, apply);
+  pendingEffects.handler(handler, applyIn({}));
 
   busyRegistry.register(BusyRule, (unit: Unit, context?: BusyContext): Busy => {
     // The loading game's registries where the loader supplies them. The ones
@@ -133,14 +145,19 @@ export const registerDelayedAction = <A extends Action = Action>(
     // where the handler has to be known, or the unit fails when its work comes
     // due. A loading game's registry is fresh, and handlers are registered at
     // import, so only into the singleton.
+    //
+    // A registry keeps the first handler it learns, with that context: the
+    // singleton's is the import-time one, with `{}`. That only matters if the
+    // effect is discharged without a performed action, and the rebuilt rule
+    // below always passes one, built for this context.
     if (!loadingPendingEffects.handlers().includes(handler)) {
-      loadingPendingEffects.handler(handler, apply);
+      loadingPendingEffects.handler(handler, applyIn(context ?? {}));
     }
 
     // Built when the work finishes, not now: see `delayedBusy`.
     return delayedBusy(
       BusyRule,
-      (): A => action(unit),
+      (): A => action(unit, context ?? {}),
       pendingEffect,
       loadingPendingEffects,
       loadingRules,

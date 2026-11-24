@@ -4,7 +4,7 @@ import {
 } from '@civ-clone/core-pending-effect';
 import { RuleRegistry } from '@civ-clone/core-rule/RuleRegistry';
 import { Turn } from '@civ-clone/core-turn-based-game/Turn';
-import { BusyRegistry } from './BusyRegistry';
+import { BusyContext, BusyRegistry } from './BusyRegistry';
 import { Action } from './Action';
 import Busy from './Rules/Busy';
 import Unit from './Unit';
@@ -20,8 +20,13 @@ export type DelayedActionDefinition<A extends Action = Action> = {
    * where `BuildIrrigation` takes a `Turn`. `civ1-unit` already handles that by
    * constructing each group separately; a single `new ActionType(...)` here
    * would pass a `Turn` where a registry was expected for four of the eight.
+   *
+   * `context` is the game the unit is being loaded into (`BusyContext`, named
+   * after `Game`'s slots), or `{}` when there is none: build the action with
+   * its registries, falling back to the constructor's defaults, so a completion
+   * after a load writes where that game looks (civ-clone/web-renderer#248).
    */
-  action: (unit: Unit) => A;
+  action: (unit: Unit, context: BusyContext) => A;
   /** `package:name`, recorded in the save in place of the closure. */
   handler: string;
   /**
@@ -37,8 +42,7 @@ export type DelayedActionDefinition<A extends Action = Action> = {
    * did — `Fortified` landed in a registry the test was not looking at.
    *
    * After a load there is no performed action, so it is rebuilt with the
-   * `action` factory above — defaults, which is all a load can do until
-   * plugins register against a game rather than at import.
+   * `action` factory above, from the loading game's registries.
    *
    * Third rather than first so that packages written against the two-argument
    * form keep working: they ignore it.
